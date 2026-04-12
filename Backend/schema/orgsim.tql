@@ -1,0 +1,105 @@
+define
+
+  # ── Attribute types ──────────────────────────────────────────────────────────
+
+  attribute name, value string;
+  attribute description, value string;
+  attribute budget_usd, value double;
+  attribute headcount, value integer;
+
+  attribute employee_id, value string;
+  attribute title, value string;
+  attribute department_name, value string;
+  attribute seniority, value string;
+
+  attribute product_id, value string;
+  attribute category, value string;
+
+  attribute deal_id, value string;
+  attribute deal_name, value string;
+  attribute value_usd, value double;
+  attribute stage, value string;
+  attribute probability_pct, value integer;
+  attribute close_date, value string;
+
+  attribute budget_id, value string;
+  attribute dept_name, value string;
+  attribute allocated_usd, value double;
+  attribute spent_usd, value double;
+  attribute remaining_usd, value double;
+
+  attribute metric_id, value string;
+  attribute metric_name, value string;
+  attribute metric_value, value string;
+  attribute unit, value string;
+  attribute period, value string;
+
+  attribute dependency_type, value string;
+  attribute strength, value integer;
+
+  # ── Relation types ───────────────────────────────────────────────────────────
+
+  relation Ownership,
+    relates owner,
+    relates asset;
+
+  relation CrossDeptDependency,
+    relates dependent_dept,
+    relates dependency_dept,
+    owns dependency_type,
+    owns strength;
+
+  relation Employs,
+    relates employer,
+    relates employee;
+
+  # ── Entity types ─────────────────────────────────────────────────────────────
+
+  entity Department,
+    owns name @key,
+    owns description,
+    owns budget_usd,
+    owns headcount,
+    plays Employs:employer,
+    plays CrossDeptDependency:dependent_dept,
+    plays CrossDeptDependency:dependency_dept,
+    plays Ownership:owner;
+
+  entity Employee,
+    owns employee_id @key,
+    owns name,
+    owns title,
+    owns department_name,
+    owns seniority,
+    plays Employs:employee,
+    plays Ownership:owner;
+
+  entity Product,
+    owns product_id @key,
+    owns name,
+    owns category,
+    plays Ownership:asset;
+
+  entity Deal,
+    owns deal_id @key,
+    owns deal_name,
+    owns value_usd,
+    owns stage,
+    owns probability_pct,
+    owns close_date,
+    plays Ownership:asset;
+
+  entity BudgetLine,
+    owns budget_id @key,
+    owns dept_name,
+    owns allocated_usd,
+    owns spent_usd,
+    owns remaining_usd;
+
+  entity Metric,
+    owns metric_id @key,
+    owns metric_name,
+    owns metric_value,
+    owns unit,
+    owns period,
+    owns department_name;

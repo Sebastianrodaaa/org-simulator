@@ -1,0 +1,42 @@
+{
+  "company_headcount": 87,
+  "departments": {
+    "Sales": {
+      "headcount": 18,
+      "attrition_rate_annual_pct": 14.5,
+      "open_reqs": 3,
+      "avg_tenure_months": 22,
+      "engagement_score": 7.2,
+      "top_performer_flight_risk": 2
+    },
+    "Marketing": {
+      "headcount": 12,
+      "attrition_rate_annual_pct": 11.2,
+      "open_reqs": 2,
+      "avg_tenure_months": 31,
+      "engagement_score": 6.8,
+      "top_performer_flight_risk": 1
+    },
+    "Engineering": {
+      "headcount": 34,
+      "attrition_rate_annual_pct": 9.4,
+      "open_reqs": 5,
+      "avg_tenure_months": 28,
+      "engagement_score": 7.9,
+      "top_performer_flight_risk": 3
+    },
+    "HR": {
+      "headcount": 7,
+      "attrition_rate_annual_pct": 6.1,
+      "open_reqs": 1,
+      "avg_tenure_months": 41,
+      "engagement_score": 8.3,
+      "top_performer_flight_risk": 0
+    }
+  },
+  "company_wide": {
+    "engagement_score": 7.4,
+    "attrition_rate_annual_pct": 11.1,
+    "nps_internal": 32
+  }
+}

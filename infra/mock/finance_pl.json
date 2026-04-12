@@ -1,0 +1,88 @@
+{
+  "fiscal_year": 2025,
+  "runway_months": 18,
+  "quarters": {
+    "Q1": {
+      "revenue": 2850000,
+      "cogs": 712500,
+      "gross_profit": 2137500,
+      "opex": 1920000,
+      "ebitda": 217500
+    },
+    "Q2": {
+      "revenue": 3120000,
+      "cogs": 780000,
+      "gross_profit": 2340000,
+      "opex": 2050000,
+      "ebitda": 290000
+    },
+    "Q3": {
+      "revenue": 3450000,
+      "cogs": 862500,
+      "gross_profit": 2587500,
+      "opex": 2180000,
+      "ebitda": 407500
+    },
+    "Q4_forecast": {
+      "revenue": 4100000,
+      "cogs": 1025000,
+      "gross_profit": 3075000,
+      "opex": 2560000,
+      "ebitda": 515000
+    }
+  },
+  "budget_lines": [
+    {
+      "dept": "Sales",
+      "allocated_usd": 1200000,
+      "spent_usd": 870000,
+      "remaining_usd": 330000
+    },
+    {
+      "dept": "Marketing",
+      "allocated_usd": 980000,
+      "spent_usd": 700000,
+      "remaining_usd": 280000
+    },
+    {
+      "dept": "Engineering",
+      "allocated_usd": 2400000,
+      "spent_usd": 1850000,
+      "remaining_usd": 550000
+    },
+    {
+      "dept": "HR",
+      "allocated_usd": 480000,
+      "spent_usd": 342000,
+      "remaining_usd": 138000
+    },
+    {
+      "dept": "Operations",
+      "allocated_usd": 760000,
+      "spent_usd": 590000,
+      "remaining_usd": 170000
+    }
+  ],
+  "cost_centers": {
+    "Sales": {
+      "headcount_cost": 620000,
+      "tools_cost": 145000,
+      "travel_cost": 105000
+    },
+    "Marketing": {
+      "headcount_cost": 380000,
+      "campaigns_cost": 420000,
+      "tools_cost": 180000
+    },
+    "Engineering": {
+      "headcount_cost": 1650000,
+      "infra_cost": 480000,
+      "tools_cost": 270000
+    },
+    "HR": {
+      "headcount_cost": 220000,
+      "recruiting_cost": 195000,
+      "tools_cost": 65000
+    }
+  }
+}
