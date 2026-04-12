@@ -27,9 +27,9 @@ class SimulateRequest(BaseModel):
     departments: list[str]
     # Swarm = large pool of agents; each round only a subset speaks (real multi-agent debate).
     engine: Literal["cascade", "swarm"] = "swarm"
-    rounds: int = Field(default=10, ge=1, le=40)
-    swarm_size: Optional[int] = Field(default=None, ge=4, le=512)
-    max_active_per_round: Optional[int] = Field(default=None, ge=2, le=128)
+    rounds: int = Field(default=4, ge=1, le=40)
+    swarm_size: Optional[int] = Field(default=24, ge=4, le=512)
+    max_active_per_round: Optional[int] = Field(default=8, ge=2, le=128)
 
     @field_validator("decision")
     @classmethod
@@ -84,6 +84,16 @@ async def _run_streaming_background(run_id: str, req: SimulateRequest) -> None:
 
     try:
         run_store.runs[run_id]["status"] = "running"
+        # Immediate heartbeat so clients see activity while personas generate.
+        kickoff = {
+            "type": "start",
+            "run_id": run_id,
+            "message": "Simulation initialized — preparing personas and round execution.",
+            "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        }
+        run_store.event_history.setdefault(run_id, []).append(kickoff)
+        await queue.put(kickoff)
+        logger.info("Kickoff event queued for run %s", run_id)
         rounds = min(15, req.rounds) if req.engine == "swarm" else min(40, req.rounds)
         rec = await run_live_streaming_pipeline(
             run_id=run_id,
@@ -116,6 +126,9 @@ async def _run_streaming_background(run_id: str, req: SimulateRequest) -> None:
         # Keep the queue alive briefly for late-connecting WebSockets, then clean up
         await asyncio.sleep(60)
         run_store.queues.pop(run_id, None)
+        # Keep recent history a bit longer so users can reconnect/view immediately.
+        await asyncio.sleep(120)
+        run_store.event_history.pop(run_id, None)
 
 
 @router.post("", response_model=SimulationRun, status_code=202)
@@ -134,6 +147,7 @@ async def create_simulation(req: SimulateRequest, background_tasks: BackgroundTa
             "engine": req.engine,
         }
         run_store.runs[run_id] = run
+        run_store.event_history[run_id] = []
 
         if use_live:
             # Create the queue BEFORE scheduling the background task so the

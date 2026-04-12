@@ -73,6 +73,7 @@
 [x] Add swarm interaction visualizer (agent-level nodes + inferred interaction edges) to `frontend/app/simulate/page.tsx` [Frontend agent]
 [x] WebSocket client hook: useSimulationStream(runId) [Frontend agent]
 [x] API client: frontend/lib/api.ts [Frontend agent]
+[x] Fix late WebSocket attach race: backend event backlog + replay for simulation visualizer [Frontend/Backend agent]
 
 ## Phase 5 — Demo hardening (target: 2-3 hrs)
 
