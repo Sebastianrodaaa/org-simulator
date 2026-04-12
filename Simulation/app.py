@@ -392,7 +392,12 @@ async def stream_simulation(req: RunSimulationRequest) -> StreamingResponse:
             )
             for msg in round_msgs:
                 yield json.dumps(_ws_agent_envelope(run_id, msg)) + "\n"
-            await asyncio.sleep(0)  # yield control so the response actually flushes
+                # Pace output so the frontend visualization can render between
+                # messages. With rule-based fallback (Ollama OOM / unavailable)
+                # rounds complete in milliseconds; without this delay the entire
+                # simulation flushes as a single burst before the UI can animate.
+                await asyncio.sleep(0.8)
+            await asyncio.sleep(0.5)  # brief gap between rounds
 
         # After all rounds: extract conflicts and emit conflict events
         all_messages = platform.get_thread()
