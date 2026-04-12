@@ -18,6 +18,8 @@ from typing import Any
 
 import httpx
 
+from api import run_store
+
 logger = logging.getLogger(__name__)
 
 _DEFAULT_LOCAL = "http://127.0.0.1:8001"
@@ -41,10 +43,12 @@ def resolve_simulation_service_url() -> str | None:
     explicit = os.getenv("SIMULATION_SERVICE_URL", "").strip()
     if explicit:
         base = explicit.rstrip("/")
-        if _health_ok_sync(base):
-            return base
-        logger.warning("SIMULATION_SERVICE_URL=%s is not healthy — probe failed", base)
-        return None
+        if not _health_ok_sync(base):
+            logger.warning(
+                "SIMULATION_SERVICE_URL=%s probe failed; attempting anyway",
+                base,
+            )
+        return base
     base = _DEFAULT_LOCAL
     if _health_ok_sync(base):
         logger.info("Using default simulation service at %s", base)
@@ -128,6 +132,7 @@ async def run_live_streaming_pipeline(
                     continue
                 try:
                     event = json.loads(line)
+                    run_store.event_history.setdefault(run_id, []).append(event)
                     await queue.put(event)
                     etype = event.get("type", "?")
                     if etype == "complete":

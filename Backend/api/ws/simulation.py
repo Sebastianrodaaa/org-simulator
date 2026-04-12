@@ -155,6 +155,20 @@ async def _queue_stream(websocket: WebSocket, run_id: str, queue: asyncio.Queue)
     logger.info("Queue stream finished for run %s", run_id)
 
 
+async def _history_stream(websocket: WebSocket, run_id: str) -> bool:
+    """
+    Replay buffered events for runs that completed before WS attached/re-attached.
+    Returns True if history was sent.
+    """
+    history = run_store.event_history.get(run_id) or []
+    if not history:
+        return False
+    logger.info("Replaying %d buffered events for run %s", len(history), run_id)
+    for event in history:
+        await websocket.send_json(event)
+    return True
+
+
 async def _nats_stream(websocket: WebSocket, run_id: str) -> None:
     """Relay NATS JetStream messages to the WebSocket."""
     js = await get_jetstream()
@@ -235,6 +249,10 @@ async def simulation_ws(websocket: WebSocket, run_id: str) -> None:
         if queue is not None:
             logger.info("Using queue stream for run %s", run_id)
             await _queue_stream(websocket, run_id, queue)
+            return
+
+        # Priority 1b: replay completed/backlogged events if available
+        if await _history_stream(websocket, run_id):
             return
 
         # Priority 2: NATS relay

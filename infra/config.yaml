@@ -12,9 +12,9 @@ departments:
 
 simulation:
   # cascade: classic 4-stakeholder full rounds | swarm: large pool, subset speaks each round
-  engine: cascade
-  swarm_size: 64
-  max_active_per_round: 20
+  engine: swarm
+  swarm_size: 24
+  max_active_per_round: 8
   swarm_peer_recent: 10
   swarm_context_messages: 120
   # Map API department names → persona template ids (YAML in simulation/templates/)

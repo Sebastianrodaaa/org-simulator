@@ -15,3 +15,6 @@ runs: dict[str, dict[str, Any]] = {}
 # run_id → asyncio.Queue  (live events from the streaming pipeline)
 # Present only when SIMULATION_SERVICE_URL is set and streaming has started.
 queues: dict[str, asyncio.Queue] = {}
+
+# run_id → list[dict]  (event backlog for late WebSocket subscribers/reconnects)
+event_history: dict[str, list[dict[str, Any]]] = {}
