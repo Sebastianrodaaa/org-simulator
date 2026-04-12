@@ -1,0 +1,82 @@
+services:
+  typedb:
+    image: vaticle/typedb:2.28.0
+    container_name: orgsim-typedb
+    ports:
+      - "1729:1729"
+    volumes:
+      - typedb_data:/opt/typedb-all-linux/server/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1729/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: orgsim-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/orgsimpass
+      NEO4J_PLUGINS: '["apoc"]'
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "orgsimpass", "RETURN 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: orgsim-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["--jetstream", "--http_port", "8222"]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  temporal:
+    image: temporalio/auto-setup:1.24
+    container_name: orgsim-temporal
+    ports:
+      - "7233:7233"
+    environment:
+      - DB=sqlite
+    depends_on:
+      - nats
+    healthcheck:
+      test: ["CMD", "temporal", "workflow", "list", "--address", "localhost:7233"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: orgsim-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  typedb_data:
+  neo4j_data:
+  ollama_data:
+
+networks:
+  default:
+    name: orgsim-network
