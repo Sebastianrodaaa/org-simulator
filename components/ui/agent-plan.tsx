@@ -11,6 +11,44 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
+/** Spinning dial shown for in-progress steps */
+function SpinningDial({ size = 16 }: { size?: number }) {
+  const r = size / 2 - 1.5;
+  const circ = 2 * Math.PI * r;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      className="animate-spin"
+      style={{ animationDuration: "1s", animationTimingFunction: "linear" }}
+    >
+      {/* Track */}
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke="#bfdbfe"
+        strokeWidth={1.8}
+      />
+      {/* Arc segment — 75% of circumference */}
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke="#3b82f6"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeDasharray={`${circ * 0.72} ${circ * 0.28}`}
+        strokeDashoffset={0}
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+      />
+    </svg>
+  );
+}
+
 // Type definitions
 interface Subtask {
   id: string;
@@ -299,7 +337,11 @@ export default function Plan({ events = [], status = "idle" }: PlanProps) {
   useEffect(() => {
     const hasAgentMessages = events.some((e) => e.type === "agent_message");
     const hasConflicts = events.some((e) => e.type === "conflict");
-    const isComplete = status === "complete";
+    // Check both the status prop AND whether a complete event is in the stream,
+    // so completion is detected even if the status prop update races onclose.
+    const isComplete =
+      status === "complete" ||
+      events.some((e) => (e.type as string) === "complete");
 
     setTasks((prev) =>
       prev.map((task) => {
@@ -544,7 +586,7 @@ export default function Plan({ events = [], status = "idle" }: PlanProps) {
                             {task.status === "completed" ? (
                               <CheckCircle2 className="h-4 w-4 text-green-500" />
                             ) : task.status === "in-progress" ? (
-                              <CircleDotDashed className="h-4 w-4 text-blue-500" />
+                              <SpinningDial size={16} />
                             ) : task.status === "need-help" ? (
                               <CircleAlert className="h-4 w-4 text-yellow-500" />
                             ) : task.status === "failed" ? (
@@ -703,7 +745,7 @@ export default function Plan({ events = [], status = "idle" }: PlanProps) {
                                             <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
                                           ) : subtask.status ===
                                             "in-progress" ? (
-                                            <CircleDotDashed className="h-3.5 w-3.5 text-blue-500" />
+                                            <SpinningDial size={14} />
                                           ) : subtask.status ===
                                             "need-help" ? (
                                             <CircleAlert className="h-3.5 w-3.5 text-yellow-500" />
