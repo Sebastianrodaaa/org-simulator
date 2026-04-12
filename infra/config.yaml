@@ -1,0 +1,27 @@
+# OrgSim runtime configuration (departments and simulation tuning).
+# Override path with ORGSIM_CONFIG=/path/to/config.yaml
+
+departments:
+  valid:
+    - Sales
+    - Finance
+    - Operations
+    - HR
+    - Engineering
+    - Marketing
+
+simulation:
+  # cascade: classic 4-stakeholder full rounds | swarm: large pool, subset speaks each round
+  engine: cascade
+  swarm_size: 64
+  max_active_per_round: 20
+  swarm_peer_recent: 10
+  swarm_context_messages: 120
+  # Map API department names → persona template ids (YAML in simulation/templates/)
+  department_templates:
+    Sales: vp_sales
+    Finance: cfo
+    Operations: ops_lead
+    Engineering: ops_lead
+    HR: hr_director
+    Marketing: vp_sales

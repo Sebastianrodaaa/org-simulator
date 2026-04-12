@@ -1,0 +1,26 @@
+deal_id,deal_name,value_usd,stage,owner,product,department,close_date,probability_pct
+D001,Meridian Global ERP Migration,450000,Negotiation,Sarah Chen,EnterpriseCore,Sales,2025-09-15,75
+D002,Axiom Analytics Platform,185000,Proposal,James Okafor,AnalyticsPlus,Sales,2025-10-30,55
+D003,Vantage Security Overhaul,320000,Qualification,Maria Lopez,SecuritySuite,Sales,2025-11-14,40
+D004,Pinnacle Corp EnterpriseCore Renewal,850000,Closed Won,Sarah Chen,EnterpriseCore,Sales,2025-07-01,100
+D005,Summit Health Analytics,95000,Prospecting,David Kim,AnalyticsPlus,Sales,2025-12-01,20
+D006,Redwood Capital SecuritySuite,215000,Proposal,James Okafor,SecuritySuite,Sales,2025-10-15,60
+D007,Ironclad Manufacturing Core,380000,Negotiation,Maria Lopez,EnterpriseCore,Sales,2025-09-30,80
+D008,BlueHaven Insurance Analytics,130000,Qualification,David Kim,AnalyticsPlus,Sales,2025-11-30,35
+D009,Cascade Retail Security,75000,Closed Lost,Sarah Chen,SecuritySuite,Sales,2025-08-01,0
+D010,Orion Tech EnterpriseCore,620000,Proposal,James Okafor,EnterpriseCore,Sales,2025-10-20,50
+D011,Stellar Pharma Analytics,240000,Negotiation,Maria Lopez,AnalyticsPlus,Sales,2025-09-20,70
+D012,Nova Logistics SecuritySuite,155000,Prospecting,David Kim,SecuritySuite,Sales,2025-12-15,15
+D013,Titan Energy Core,510000,Qualification,Sarah Chen,EnterpriseCore,Sales,2025-11-05,45
+D014,Gemini Financial Analytics,88000,Proposal,James Okafor,AnalyticsPlus,Sales,2025-10-25,55
+D015,Atlas Consulting SecuritySuite,195000,Closed Won,Maria Lopez,SecuritySuite,Sales,2025-08-15,100
+D016,Vertex Systems EnterpriseCore,730000,Negotiation,David Kim,EnterpriseCore,Sales,2025-09-10,78
+D017,Cobalt Media Analytics,42000,Closed Lost,Sarah Chen,AnalyticsPlus,Sales,2025-07-20,0
+D018,Prism Healthcare Core,290000,Proposal,James Okafor,EnterpriseCore,Sales,2025-11-20,52
+D019,Helix Biotech SecuritySuite,175000,Qualification,Maria Lopez,SecuritySuite,Sales,2025-12-05,38
+D020,Zenith Aerospace Analytics,310000,Negotiation,David Kim,AnalyticsPlus,Sales,2025-09-25,72
+D021,Falcon Defense EnterpriseCore,480000,Proposal,Sarah Chen,EnterpriseCore,Sales,2025-10-10,48
+D022,Eclipse Fintech SecuritySuite,15000,Prospecting,James Okafor,SecuritySuite,Sales,2025-12-20,10
+D023,Harbor Shipping Analytics,220000,Qualification,Maria Lopez,AnalyticsPlus,Sales,2025-11-10,42
+D024,Summit Retail EnterpriseCore,565000,Negotiation,David Kim,EnterpriseCore,Sales,2025-09-05,82
+D025,Crest Insurance Analytics,148000,Proposal,Sarah Chen,AnalyticsPlus,Sales,2025-10-28,58

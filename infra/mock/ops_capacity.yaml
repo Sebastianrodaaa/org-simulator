@@ -1,0 +1,20 @@
+engineering:
+  total_headcount: 28
+  capacity_pct: 94
+  open_incidents_p1: 2
+  open_incidents_p2: 7
+  infra_monthly_cost_usd: 40000
+  sprint_velocity: 62
+  open_reqs: 5
+  planned_features_q4:
+    - "EnterpriseCore SSO integration"
+    - "AnalyticsPlus real-time dashboard v2"
+    - "SecuritySuite threat intelligence feed"
+    - "API rate limiting and quota management"
+    - "Multi-tenant data isolation layer"
+
+devops:
+  total_headcount: 6
+  capacity_pct: 88
+  uptime_30d_pct: 99.7
+  deploy_frequency_per_week: 8
