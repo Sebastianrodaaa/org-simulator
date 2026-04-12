@@ -21,12 +21,12 @@ single dataset alone.
 - NATS JetStream: real-time event streaming from sim engine to frontend
 - FastAPI: REST + WebSocket API layer (Python 3.11+)
 - Next.js 15 App Router + Tailwind: frontend dashboard
-- Ollama (qwen2.5:32b or qwen2.5:14b): local LLM — NO cloud API calls
+- OpenAI API (gpt-4o-mini): primary LLM via OPENAI_API_KEY in Simulation/.env
 - DSPy: compile agent reasoning pipelines instead of writing raw prompts
 - Cedar (optional, Phase 3+): policy enforcement for scenario authorization
 
 ## Key constraints
-- Everything runs locally — zero cloud LLM dependencies
+- LLM: OpenAI API (gpt-4o-mini) via OPENAI_API_KEY in Simulation/.env
 - Simulation must complete a demo run in under 90 seconds
 - Agents must have role-specific behavioral biases in persona templates
 - The "CFO cuts Q4 marketing budget 20%" scenario is the primary demo — build toward it
@@ -70,7 +70,7 @@ orgsim/
 - Commit messages: conventional commits (feat:, fix:, chore:, docs:)
 
 ## What NOT to do
-- Do not use cloud LLM APIs (OpenAI, Anthropic direct) — use Ollama only
+- Do not use Anthropic API directly — use OpenAI SDK with OPENAI_API_KEY
 - Do not use the Next.js pages/ router — App Router only
 - Do not write raw prompt strings for agent reasoning — use DSPy signatures
 - Do not install TypeDB driver v2.x — use typedb-driver 3.x (breaking API change)
