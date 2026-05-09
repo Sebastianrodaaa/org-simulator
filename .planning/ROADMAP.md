@@ -42,6 +42,24 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 - Prefer adapting the existing split-pane tool surface over building a landing page.
 - Keep the initial UX dense, useful, and operational.
 
+**Plans:**
+
+**Wave 1**
+
+- `01-01-PLAN.md` — Root routing, navigation, metadata, and CivicBridge shell copy.
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- `01-02-PLAN.md` — Track selector, guided scenarios, structured facts, uncertainty chips, and safety note.
+- `01-03-PLAN.md` — Static advisor preview, right-panel labels, action-report label, and visible-copy verification.
+
+**Cross-cutting constraints:**
+
+- Keep `/dashboard` accessible but not primary.
+- Default track is Founder Immigration.
+- Use CivicBridge planning/rehearsal language and avoid legal-outcome promises.
+- Hide old department/business vocabulary from the primary Phase 1 flow.
+
 ### Phase 2: Advisor Simulation Conversion
 
 **Goal:** The simulation pipeline runs with immigration and systems-navigation advisor personas instead of CFO/Sales/HR/Operations personas.
@@ -134,4 +152,3 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 
 ---
 *Roadmap created: 2026-05-09*
-
