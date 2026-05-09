@@ -14,9 +14,11 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 | # | Phase | Goal | Requirements | UI hint |
 |---|-------|------|--------------|---------|
 | 1 | Product Shell and Intake | Turn the first screen into an immigration-focused two-track scenario tool | SHELL-01, SHELL-02, SHELL-03, SHELL-04, INTAKE-01, INTAKE-02, INTAKE-03, SAFE-01 | complete |
-| 2 | Advisor Simulation Conversion | Replace org departments/personas with immigration and systems-navigation advisor simulations | SIM-01, SIM-02, SIM-03, SIM-04, SAFE-02 | yes |
-| 3 | Risk Graph and Action Report | Convert conflicts into user-centered risks and produce actionable reports | RISK-01, RISK-02, RISK-03, REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05 | yes |
-| 4 | Demo Hardening and Verification | Make the combined demo reliable, tested, and ready to present | SAFE-03, SAFE-04 | yes |
+| 2 | Advisor Simulation Conversion | Replace org departments/personas with immigration and systems-navigation advisor simulations | SIM-01, SIM-02, SIM-03, SIM-04, SAFE-02 | complete |
+| 3 | Risk Graph and Action Report | Convert conflicts into user-centered risks and produce actionable reports | RISK-01, RISK-02, RISK-03, REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05 | complete |
+| 4 | Demo Hardening and Verification | Make the combined demo reliable, tested, and ready to present | SAFE-03, SAFE-04 | complete |
+| 5 | Snapshot and GET Report Wiring | Close stub/streaming/WS gaps so `GET /simulate/{id}` returns report payload on all completion paths | REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05, RISK-01, RISK-02, SIM-03, SIM-04 | planned |
+| 6 | CivicBridge Tests and Swarm Labels | Align automated tests with CivicBridge narrative and swarm graph labels with advisor lanes | RISK-03, SAFE-02, SAFE-03 | planned |
 
 **Coverage:** 23 / 23 v1 requirements mapped.
 
@@ -71,6 +73,8 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 
 ### Phase 2: Advisor Simulation Conversion
 
+**Status:** Complete — 2026-05-09
+
 **Goal:** The simulation pipeline runs with immigration and systems-navigation advisor personas instead of CFO/Sales/HR/Operations personas.
 
 **Requirements:** SIM-01, SIM-02, SIM-03, SIM-04, SAFE-02
@@ -90,7 +94,13 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 - Preserve current API names if that minimizes frontend churn, but normalize labels at the UI boundary.
 - Keep rule-based fallback deterministic for judging.
 
+**Completed outputs:**
+
+- Track-aware advisor templates, swarm/cascade wiring, backend `track` validation, and frontend intake aligned with CivicBridge personas (see Phase 2 execution commits).
+
 ### Phase 3: Risk Graph and Action Report
+
+**Status:** Complete — 2026-05-09
 
 **Goal:** The app translates advisor deliberation into risks, blockers, evidence gaps, timeline collisions, and an action-oriented report.
 
@@ -111,7 +121,13 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 - Add enough run/event persistence to make the report route useful after navigation.
 - Keep the legal-safety copy concise and visible.
 
+**Completed outputs:**
+
+- Dynamic cascade risk graph, extended TS/report UI, CivicBridge mock WebSocket script, extractor risk metadata + tests, snapshot enrichment for action reports (Phase 3 artifacts under `.planning/phases/03-risk-graph-and-action-report/`).
+
 ### Phase 4: Demo Hardening and Verification
+
+**Status:** Complete — 2026-05-09
 
 **Goal:** The product is reliable enough to present end-to-end and has tests covering the repurposed domain.
 
@@ -131,6 +147,50 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 - Update `Backend/tests/test_e2e.py`, `Simulation/tests/`, and add lightweight frontend/type tests only if the stack already supports them.
 - Run `pytest Simulation/tests -v`, relevant backend tests, `npm run lint`, and `npm run build` where feasible.
 
+**Completed outputs:**
+
+- Added `Simulation/tests/test_extractor_risk_metadata.py`, declared `websockets` in `requirements.txt`, re-ran Simulation pytest + Frontend lint/build; backend e2e remains optional/skipped without live services.
+
+### Phase 5: Snapshot and GET Report Wiring
+
+**Status:** Planned — gap closure (`v1.0-MILESTONE-AUDIT.md`)
+
+**Goal:** Stub runs, streaming failure paths, and WS/mock fallbacks all produce a GET-shaped snapshot (`messages`, `conflicts`, `report`) so the report route works for backend-only and partial-stream demos, not only the two-service live path.
+
+**Requirements:** REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05, RISK-01, RISK-02, SIM-03, SIM-04
+
+**Gap closure:** Closes audit requirements partial on stub/WS paths and integration gaps: `_stub_run` → `attach_snapshot_to_run`; `_run_streaming_background` exception path → snapshot where feasible; `Backend/api/ws/simulation.py` mock/honest paths → merge `event_history` / snapshot for GET reconciliation.
+
+**Success criteria:**
+
+1. After `_stub_run` completes, `GET /simulate/{id}` includes structured `report` (or documented minimal contract) and supporting `messages` / `conflicts` as required by the UI.
+2. Streaming failures attach a snapshot or partial snapshot when `event_history` allows.
+3. WS-only sessions reconcile into the same GET shape the report page expects.
+
+**Implementation notes:**
+
+- Primary touchpoints: `Backend/api/routes/simulate.py`, `Backend/api/services/live_simulation.py`, `Backend/api/ws/simulation.py`, `Backend/api/simulation_snapshot.py`.
+
+### Phase 6: CivicBridge Tests and Swarm Labels
+
+**Status:** Planned — gap closure (`v1.0-MILESTONE-AUDIT.md`)
+
+**Goal:** Automated tests and swarm visualization align with CivicBridge advisor lanes and narratives; remaining business-demo references in tests are removed or updated.
+
+**Requirements:** RISK-03, SAFE-02, SAFE-03
+
+**Gap closure:** Closes audit integration/tests gap (e2e + persona fixtures vs CivicBridge) and low-severity swarm UI color map (`SwarmInteractionGraph` vs dynamic advisor strings).
+
+**Success criteria:**
+
+1. `Backend/tests/test_e2e.py` and Simulation persona tests use CivicBridge tracks/scenarios where they assert user-visible or API labels.
+2. Swarm graph department/lane colors map to current advisor department strings (no grey-only for new lanes).
+3. SAFE-03 coverage remains meaningful after narrative alignment.
+
+**Implementation notes:**
+
+- Primary touchpoints: `Backend/tests/test_e2e.py`, `Simulation/tests/`, `Frontend` swarm/graph components (e.g. `SwarmInteractionGraph` / `ConflictGraph` as applicable).
+
 ## Requirement Coverage
 
 | Requirement | Phase | Status |
@@ -142,22 +202,22 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 | INTAKE-01 | Phase 1 | Complete |
 | INTAKE-02 | Phase 1 | Complete |
 | INTAKE-03 | Phase 1 | Complete |
-| SIM-01 | Phase 2 | Pending |
-| SIM-02 | Phase 2 | Pending |
-| SIM-03 | Phase 2 | Pending |
-| SIM-04 | Phase 2 | Pending |
-| RISK-01 | Phase 3 | Pending |
-| RISK-02 | Phase 3 | Pending |
-| RISK-03 | Phase 3 | Pending |
-| REPORT-01 | Phase 3 | Pending |
-| REPORT-02 | Phase 3 | Pending |
-| REPORT-03 | Phase 3 | Pending |
-| REPORT-04 | Phase 3 | Pending |
-| REPORT-05 | Phase 3 | Pending |
+| SIM-01 | Phase 2 | Complete |
+| SIM-02 | Phase 2 | Complete |
+| SIM-03 | Phase 5 | Pending |
+| SIM-04 | Phase 5 | Pending |
+| RISK-01 | Phase 5 | Pending |
+| RISK-02 | Phase 5 | Pending |
+| RISK-03 | Phase 6 | Pending |
+| REPORT-01 | Phase 5 | Pending |
+| REPORT-02 | Phase 5 | Pending |
+| REPORT-03 | Phase 5 | Pending |
+| REPORT-04 | Phase 5 | Pending |
+| REPORT-05 | Phase 5 | Pending |
 | SAFE-01 | Phase 1 | Complete |
-| SAFE-02 | Phase 2 | Pending |
-| SAFE-03 | Phase 4 | Pending |
-| SAFE-04 | Phase 4 | Pending |
+| SAFE-02 | Phase 6 | Pending |
+| SAFE-03 | Phase 6 | Pending |
+| SAFE-04 | Phase 4 | Complete |
 
 ---
-*Roadmap created: 2026-05-09*
+*Roadmap created: 2026-05-09 · Phases 2–4 marked complete 2026-05-09 · Gap closure phases 5–6 added 2026-05-09 (milestone audit)*

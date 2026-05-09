@@ -95,28 +95,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INTAKE-01 | Phase 1 | Complete |
 | INTAKE-02 | Phase 1 | Complete |
 | INTAKE-03 | Phase 1 | Complete |
-| SIM-01 | Phase 2 | Pending |
-| SIM-02 | Phase 2 | Pending |
-| SIM-03 | Phase 2 | Pending |
-| SIM-04 | Phase 2 | Pending |
-| RISK-01 | Phase 3 | Pending |
-| RISK-02 | Phase 3 | Pending |
-| RISK-03 | Phase 3 | Pending |
-| REPORT-01 | Phase 3 | Pending |
-| REPORT-02 | Phase 3 | Pending |
-| REPORT-03 | Phase 3 | Pending |
-| REPORT-04 | Phase 3 | Pending |
-| REPORT-05 | Phase 3 | Pending |
+| SIM-01 | Phase 2 | Complete |
+| SIM-02 | Phase 2 | Complete |
+| SIM-03 | Phase 5 | Pending |
+| SIM-04 | Phase 5 | Pending |
+| RISK-01 | Phase 5 | Pending |
+| RISK-02 | Phase 5 | Pending |
+| RISK-03 | Phase 6 | Pending |
+| REPORT-01 | Phase 5 | Pending |
+| REPORT-02 | Phase 5 | Pending |
+| REPORT-03 | Phase 5 | Pending |
+| REPORT-04 | Phase 5 | Pending |
+| REPORT-05 | Phase 5 | Pending |
 | SAFE-01 | Phase 1 | Complete |
-| SAFE-02 | Phase 2 | Pending |
-| SAFE-03 | Phase 4 | Pending |
-| SAFE-04 | Phase 4 | Pending |
+| SAFE-02 | Phase 6 | Pending |
+| SAFE-03 | Phase 6 | Pending |
+| SAFE-04 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 23 total
 - Mapped to phases: 23
 - Unmapped: 0
+- Traceability Pending (gap closure): 12
 
 ---
 *Requirements defined: 2026-05-09*
-*Last updated: 2026-05-09 after Phase 1 execution*
+*Last updated: 2026-05-09 — gap closure phases 5–6 from v1.0 milestone audit*
