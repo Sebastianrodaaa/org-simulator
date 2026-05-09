@@ -48,9 +48,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(title="OrgSim API", version="0.1.0", lifespan=lifespan)
 
+# Local dev: Next.js may bind :3000, :3001, etc. Regex avoids CORS breaking on port drift.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_methods=["*"],
     allow_headers=["*"],
 )
