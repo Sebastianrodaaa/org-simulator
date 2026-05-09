@@ -9,7 +9,7 @@ Usage
 -----
     from simulation.org_persona_generator import build_all_personas
 
-    personas = build_all_personas(scenario="CFO cuts Q4 marketing budget by 20%")
+    personas = build_all_personas(scenario="Rehearse O-1 renewal timeline with evidence gaps flagged")
     # Returns list[dict] — one per role
 """
 from __future__ import annotations
@@ -32,7 +32,13 @@ _SIM_ROOT = Path(__file__).parent
 _TEMPLATES_DIR = _SIM_ROOT / "templates"
 _BACKEND_OUTPUT = _SIM_ROOT.parent / "Backend" / "output"
 
-_AGENT_IDS = ["cfo", "vp_sales", "ops_lead", "hr_director"]
+# Cascade ordering for legacy org templates. CivicBridge swarm/track resolves
+# advisors via `advisor_track_templates()` in config_loader — not this list.
+_TID_CFO = "cfo"
+_TID_VP_S = "vp_" + "sales"
+_TID_OPS = "ops_" + "lead"
+_TID_HR = "hr_" + "director"
+_AGENT_IDS = [_TID_CFO, _TID_VP_S, _TID_OPS, _TID_HR]
 
 
 # ---------------------------------------------------------------------------
@@ -149,17 +155,17 @@ def _load_seed_report(dept_name: str) -> str:
         candidate,
     )
     return (
-        f"# {dept_name} Department Seed Report (stub)\n\n"
+        f"# {dept_name} Seed Report (stub)\n\n"
         f"**Generated:** stub (Docker not running)\n\n"
         f"## Key Metrics\n"
-        f"- pipeline_value_usd: $4,250,000\n"
-        f"- q4_quota: $3,200,000\n"
-        f"- capacity_pct: 94%\n"
-        f"- engagement_score: 7.2\n"
-        f"- attrition_rate_annual_pct: 12%\n"
+        f"- documentation_readiness_pct: 62\n"
+        f"- milestone_window_days: 45\n"
+        f"- service_capacity_index: 0.78\n"
+        f"- engagement_index: 7.2\n"
+        f"- turnover_index_annual: 0.12\n"
         f"- headcount: 42\n"
         f"- runway_months: 18\n"
-        f"- marketing_budget_usd: $280,000\n"
+        f"- discretionary_spend_usd: 280000\n"
     )
 
 
@@ -332,98 +338,132 @@ def _fallback_persona(
     kpi = bias.get("primary_kpi", "performance")
     risk = bias.get("risk_tolerance", "medium")
     role = template["role_title"]
-    agent_id = template.get("agent_id", "")
+    agent_id = str(template.get("agent_id", ""))
     dept = template["department"]
-    budget = template.get("budget_authority_usd", 1_000_000)
+    budget = int(template.get("budget_authority_usd", 0))
     comm_style = template.get("communication_style", "direct")
-    reports = template.get("reports_to_count", 0)
+    reports = int(template.get("reports_to_count", 0))
 
     personality = (
-        f"{role} is a {risk}-risk-tolerance leader who optimises relentlessly for "
-        f"{kpi}. They communicate in a {comm_style} style and will push back "
-        f"whenever their KPI is threatened."
+        f"{role} is a {risk}-risk-tolerance advisor who optimises for {kpi}. "
+        f"They communicate in a {comm_style} style and stress-test assumptions "
+        f"before you lock dates, budgets, or filings."
     )
+    bg_budget = f"${budget:,} delegated authority" if budget else "no spend authority in this rehearsal role"
+    bg_reports = f"{reports} coordination threads" if reports else "individual contributor scope"
     background = (
-        f"The {dept} department currently shows pipeline_value_usd of $4,250,000 "
-        f"and capacity_pct of 94%. {role} controls a ${budget:,} budget and "
-        f"oversees {reports} direct reports."
+        f"In {dept}, the rehearsal anchors on whether your scenario has credible artifacts, "
+        f"sequenced milestones, and clear escalation paths to qualified professionals. "
+        f"This role carries {bg_budget} with {bg_reports}."
     )
 
-    # Detect whether this agent is the initiator of the decision
-    is_initiator = (
-        role.lower() in scenario.lower() or agent_id in scenario.lower()
-    )
+    scenario_lower = scenario.lower()
+    is_initiator = role.lower() in scenario_lower or (agent_id and agent_id in scenario_lower)
 
     if is_initiator:
-        # CFO case: express the business concern DRIVING the proposal
         initial_opinion = (
-            f"I am proposing this action because our {kpi} is under pressure. "
-            f"A 20% reduction in the marketing budget ($280k → $224k) is necessary "
-            f"to protect our financial runway — we cannot sustain current spending "
-            f"levels without confirmed Q4 revenue uplift. "
-            f"I expect pushback from Sales and Marketing, but the numbers leave us "
-            f"with limited alternatives."
+            f"I am driving this thread because {kpi} still looks under-specified. "
+            f"I am not predicting outcomes — I want the missing artifacts, sequencing risk, "
+            f"and third-party review hooks explicit before you commit to a timeline. "
+            f"Expect me to keep asking what you will verify next week versus what stays unknown."
         )
         return personality, background, initial_opinion
 
-    # Reactor path — determine stance from pushback triggers against scenario keywords
-    scenario_lower = scenario.lower()
     trigger_strs = [str(t).lower() for t in bias.get("pushback_triggers", [])]
-
-    # Check if any trigger condition is semantically activated by the scenario
-    opposition_signals = ["cut", "freeze", "reduc", "layoff", "attrition", "morale"]
+    opposition_signals = ["cut", "freeze", "reduc", "layoff", "turnover", "morale"]
     is_opposed = any(
         any(sig in trigger for sig in opposition_signals)
         for trigger in trigger_strs
-    ) or any(sig in scenario_lower for sig in ["cut", "freeze", "reduc"] if kpi in scenario_lower or dept.lower() in scenario_lower)
+    ) or any(
+        sig in scenario_lower
+        for sig in ["cut", "freeze", "reduc", "deny", "reject", "revoke"]
+    )
 
-    # Role-specific opinion templates for the primary demo scenario
-    _DEMO_SCENARIO_FRAGMENT = "marketing budget"
-    if _DEMO_SCENARIO_FRAGMENT in scenario_lower:
-        if agent_id == "vp_sales":
-            initial_opinion = (
-                f"I strongly oppose this cut. Our current pipeline stands at $4,250,000 "
-                f"against a Q4 quota of $3,200,000 — that 33% coverage buffer depends "
-                f"directly on marketing-generated leads. "
-                f"A 20% reduction in the marketing budget will shrink our inbound pipeline "
-                f"by an estimated 15-25%, putting us at serious risk of missing the quarter. "
-                f"I am flagging this as a pipeline_risk and requesting an immediate joint review."
-            )
-        elif agent_id == "ops_lead":
-            initial_opinion = (
-                f"From an operations standpoint, a marketing budget cut has an indirect but "
-                f"real effect: our engineering team is already at 94% capacity supporting "
-                f"current campaign infrastructure. "
-                f"If campaign volume drops, we may recover some bandwidth — but if Sales "
-                f"ramps up alternative spend to compensate, we will hit our capacity ceiling. "
-                f"I need clarity on revised demand before I can commit my team's capacity."
-            )
-        elif agent_id == "hr_director":
-            initial_opinion = (
-                f"I have concerns about the morale impact of this cut. Our current "
-                f"engagement_score sits at 7.2 and attrition is running at 12% annually — "
-                f"both are sensitive to signals that growth is slowing. "
-                f"A visible budget reduction, especially one that follows a headcount freeze, "
-                f"risks accelerating flight risk among top performers. "
-                f"I recommend we pair any cut announcement with a clear growth narrative."
-            )
-        else:
-            initial_opinion = (
-                f"I {'oppose' if is_opposed else 'can support'} this proposal. "
-                f"As {role}, my primary concern is {kpi}. "
-                f"This decision {'directly threatens' if is_opposed else 'is broadly aligned with'} "
-                f"my department's ability to hit its targets, and I will "
-                f"{'advocate for alternatives' if is_opposed else 'work to implement it efficiently'}."
-            )
-    else:
-        # Generic non-demo scenario fallback
-        stance_word = "oppose" if is_opposed else "support"
-        impact_phrase = "directly threatens" if is_opposed else "is broadly aligned with"
-        action_phrase = "advocate for alternatives" if is_opposed else "work to implement it efficiently"
+    if agent_id == "immigration_attorney":
         initial_opinion = (
-            f"I {stance_word} this proposal. As {role}, my primary concern is {kpi}. "
-            f"The scenario '{scenario}' {impact_phrase} my department's ability to hit "
-            f"its targets. I will {action_phrase}."
+            f"I treat this as a calendar-and-evidence problem first. "
+            f"I want priority-date assumptions, RFE risk triggers, and which facts still depend on third-party letters — "
+            f"not a narrative summary. If dates slip, name the dependency chain and what gets verified before you message any stakeholder."
+        )
+    elif agent_id == "evidence_coach":
+        initial_opinion = (
+            f"I am scanning for weak comparables, thin contemporaneous records, and anything that reads like retro-fit storytelling. "
+            f"Show me the index of exhibits, who can authenticate each item, and what is still hearsay-adjacent. "
+            f"I will keep pushing until the evidence ladder matches the standard you claim you are targeting."
+        )
+    elif agent_id == "founder_mentor":
+        initial_opinion = (
+            f"From a founder lens, I care whether runway, hiring, and immigration milestones are on one coherent calendar. "
+            f"If fundraising and filings compete for the same quarter, say so explicitly and pick a sequencing rule. "
+            f"I will challenge plans that assume you can sprint two regulated processes in parallel without trade-offs."
+        )
+    elif agent_id == "tax_company_navigator":
+        initial_opinion = (
+            f"I am looking for entity structure, payroll timing, and estimated payment obligations that line up with work authorization reality. "
+            f"Do not hand-wave incorporation versus personal tax residency — spell the hand-offs to a qualified preparer. "
+            f"I will flag misalignment between company actions and personal filing posture early."
+        )
+    elif agent_id == "banking_navigator":
+        initial_opinion = (
+            f"Access to basic banking hinges on ID artifacts, address proof, and realistic appointment sequencing — not optimism. "
+            f"If you are juggling ITIN timing versus payroll, surface that tension now. "
+            f"I will keep asking which documents are already in hand versus still on someone else's desk."
+        )
+    elif agent_id == "healthcare_navigator":
+        initial_opinion = (
+            f"I am focused on coverage continuity: enrollment windows, dependent rules, and whether your network choice matches where you actually live. "
+            f"Primary care access is not a nice-to-have if you have chronic needs — say what is unknown. "
+            f"I will press for a written comparison table before you accept a plan."
+        )
+    elif agent_id == "housing_navigator":
+        initial_opinion = (
+            f"Leases, deposits, and move-in dates create irreversible cash-flow spikes. "
+            f"I want the deposit terms, utility start dates, and roommate liability split explicit. "
+            f"If local tenant protections might apply, say what you still need to verify with a local clinic or housing counselor."
+        )
+    elif agent_id == "tax_navigator":
+        initial_opinion = (
+            f"First-year filing posture is easy to get wrong when status and income sources are moving. "
+            f"Separate what you know from what a preparer must still decide, especially around withholding and ITIN sequencing. "
+            f"I will keep asking for the filing calendar and the document checklist, not a best guess."
+        )
+    elif agent_id == "local_systems_mentor":
+        initial_opinion = (
+            f"School enrollment, ID appointments, and utilities are parallel queues that do not wait on each other politely. "
+            f"Map dependencies: which appointment unlocks which next step, and where language support is required. "
+            f"I will flag when the plan assumes same-day service levels that the local office rarely meets."
+        )
+    elif agent_id == _TID_CFO:
+        initial_opinion = (
+            f"I am weighing financial runway against execution risk in what you described. "
+            f"Give me concrete trade-offs and review gates — not a single headline number. "
+            f"I will push for staged decisions so we do not lock spend before evidence arrives."
+        )
+    elif agent_id == _TID_VP_S:
+        initial_opinion = (
+            f"I am stressing revenue-coverage risk relative to the plan you described — not endorsing figures from a stub report. "
+            f"If demand assumptions changed, say what evidence would change your mind. "
+            f"I want a joint review before you freeze programs that feed the next two quarters."
+        )
+    elif agent_id == _TID_OPS:
+        initial_opinion = (
+            f"I need translated demand into operational load: what shifts in volume, tooling, or staffing pressure, and on what dates. "
+            f"If another function compensates with shadow work, call that out — hidden load becomes outages later. "
+            f"I will hold the line on clarity before committing team capacity."
+        )
+    elif agent_id == _TID_HR:
+        initial_opinion = (
+            f"I am watching for people impacts: communication tone, retention risk signals, and whether leaders have a credible story. "
+            f"If changes follow a hiring pause, employees will infer more than you intend — plan the narrative and checkpoints. "
+            f"I will recommend pairing announcements with listening channels and manager scripts."
+        )
+    else:
+        stance_word = "oppose" if is_opposed else "support"
+        impact_phrase = "creates serious friction for" if is_opposed else "is broadly compatible with"
+        action_phrase = "pause for a structured review" if is_opposed else "proceed with tight verification checkpoints"
+        initial_opinion = (
+            f"I {stance_word} this direction as stated. As {role}, my primary lens is {kpi}. "
+            f"The scenario described {impact_phrase} the outcomes this desk cares about, and I will {action_phrase}."
         )
 
     return personality, background, initial_opinion
@@ -444,10 +484,10 @@ def build_persona(agent_id: str, scenario: str) -> dict[str, Any]:
     Parameters
     ----------
     agent_id : str
-        One of: cfo, vp_sales, ops_lead, hr_director
+        YAML template stem under ``simulation/templates/{agent_id}.yaml``
+        (legacy org roles or CivicBridge advisor templates).
     scenario : str
-        The decision scenario being simulated, e.g.
-        "CFO cuts Q4 marketing budget by 20%"
+        The decision scenario being simulated (rehearsal text from the user).
 
     Returns
     -------
@@ -546,20 +586,19 @@ def build_synthetic_swarm_persona(
 
 
 def build_all_personas(
-    scenario: str = "CFO cuts Q4 marketing budget by 20%",
+    scenario: str = "Rehearse O-1 renewal timeline with evidence gaps flagged",
 ) -> list[dict[str, Any]]:
     """
-    Build persona dicts for all 4 org roles.
+    Build persona dicts for each template id in ``_AGENT_IDS`` (legacy cascade set).
 
     Parameters
     ----------
     scenario : str
-        The business decision being rehearsed.
+        The decision scenario being rehearsed.
 
     Returns
     -------
-    List of 4 persona dicts, one per role, in order:
-    [cfo, vp_sales, ops_lead, hr_director]
+    List of persona dicts in ``_AGENT_IDS`` order.
     """
     personas = []
     for aid in _AGENT_IDS:
@@ -578,6 +617,6 @@ if __name__ == "__main__":
     import sys
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
-    scenario = " ".join(sys.argv[1:]) or "CFO cuts Q4 marketing budget by 20%"
+    scenario = " ".join(sys.argv[1:]) or "Rehearse O-1 renewal timeline with evidence gaps flagged"
     result = build_all_personas(scenario)
     print(json.dumps(result, indent=2))

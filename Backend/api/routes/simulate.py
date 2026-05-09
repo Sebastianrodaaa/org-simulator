@@ -8,10 +8,10 @@ import asyncio
 import logging
 import uuid
 from datetime import datetime, timezone
-from typing import Literal, Optional
+from typing import Literal, Optional, Self
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from api import run_store
 from api.services.live_simulation import live_simulation_enabled, run_live_streaming_pipeline
@@ -24,7 +24,8 @@ VALID_DEPARTMENTS = {"Sales", "Finance", "Operations", "HR", "Engineering", "Mar
 
 class SimulateRequest(BaseModel):
     decision: str
-    departments: list[str]
+    departments: list[str] = Field(default_factory=list)
+    track: Literal["founder", "first1000"] | None = None
     # Swarm = large pool of agents; each round only a subset speaks (real multi-agent debate).
     engine: Literal["cascade", "swarm"] = "swarm"
     rounds: int = Field(default=4, ge=1, le=40)
@@ -38,15 +39,19 @@ class SimulateRequest(BaseModel):
             raise ValueError("decision must be a non-empty string")
         return v.strip()
 
-    @field_validator("departments")
-    @classmethod
-    def departments_valid(cls, v: list[str]) -> list[str]:
-        invalid = set(v) - VALID_DEPARTMENTS
+    @model_validator(mode="after")
+    def departments_valid_for_track(self) -> Self:
+        if self.track is not None:
+            return self
+        if not self.departments:
+            raise ValueError("departments must contain at least one entry when track is not set")
+        invalid = set(self.departments) - VALID_DEPARTMENTS
         if invalid:
-            raise ValueError(f"Unknown departments: {invalid}. Valid: {VALID_DEPARTMENTS}")
-        if not v:
-            raise ValueError("departments must contain at least one entry")
-        return v
+            raise ValueError(
+                f"Unknown departments: {invalid}. Valid legacy names: {VALID_DEPARTMENTS}. "
+                f"For CivicBridge, send track \"founder\" or \"first1000\" (departments may be empty)."
+            )
+        return self
 
 
 class SimulationRun(BaseModel):
@@ -68,7 +73,8 @@ async def _stub_run(run_id: str) -> None:
     if run_id in run_store.runs:
         run_store.runs[run_id]["status"] = "complete"
         run_store.runs[run_id]["recommendation"] = (
-            "Defer Q4 cut; run partial pilot in Q1 with 30-day review gate."
+            "Pause for a 30-day verification window: confirm key facts with primary sources "
+            "and a qualified professional before locking next commitments."
         )
 
 
@@ -104,6 +110,7 @@ async def _run_streaming_background(run_id: str, req: SimulateRequest) -> None:
             rounds=rounds,
             swarm_size=req.swarm_size,
             max_active_per_round=req.max_active_per_round,
+            track=req.track,
         )
         run_store.runs[run_id]["status"] = "complete"
         if rec:

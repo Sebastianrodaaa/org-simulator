@@ -33,11 +33,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from config_loader import department_templates, simulation_section
+from config_loader import advisor_track_templates, department_templates, simulation_section
 from org_persona_generator import build_all_personas, build_persona
 from orgsim_engine.decision_cascade import DecisionCascadePlatform
 from orgsim_engine.swarm_cascade import SwarmCascadePlatform
-from swarm.persona_pool import build_swarm_personas
+from swarm.persona_pool import build_swarm_personas, template_stem_from_swarm_username
 from cascade.tracer import trace_cascade
 from conflict.extractor import extract_conflicts
 from report_agent import generate_report
@@ -120,6 +120,10 @@ class GeneratePersonasRequest(BaseModel):
     departments: list[str] = Field(
         default_factory=list,
         description="Dept filter — empty list means all 4 default roles",
+    )
+    track: Literal["founder", "first1000"] | None = Field(
+        default=None,
+        description="CivicBridge track — when set, overrides department-based template selection",
     )
 
 
@@ -215,13 +219,36 @@ class GenerateReportResponse(BaseModel):
 async def generate_personas(req: GeneratePersonasRequest) -> GeneratePersonasResponse:
     """
     Load seed reports for each department and build agent persona dicts.
-    If departments is empty, all 4 default org roles are generated.
+    If ``track`` is set (CivicBridge), advisor templates for that track are used
+    and ``departments`` is ignored. If ``track`` is unset and ``departments`` is
+    empty, all 4 default org roles are generated.
     """
     run_id = str(uuid.uuid4())
-    logger.info("[%s] generate-personas: decision=%r depts=%s", run_id, req.decision, req.departments)
+    logger.info(
+        "[%s] generate-personas: decision=%r depts=%s track=%s",
+        run_id,
+        req.decision,
+        req.departments,
+        req.track,
+    )
 
     dept_map = department_templates()
     loop = asyncio.get_event_loop()
+    if req.track is not None:
+        agent_ids = advisor_track_templates(req.track)
+        if not agent_ids:
+            logger.warning("[%s] advisor_track_templates(%r) empty — falling back", run_id, req.track)
+        else:
+            personas = await loop.run_in_executor(
+                None,
+                functools.partial(
+                    lambda ids, dec: [build_persona(a, dec) for a in ids],
+                    agent_ids,
+                    req.decision,
+                ),
+            )
+            logger.info("[%s] Generated %d personas (track=%s)", run_id, len(personas), req.track)
+            return GeneratePersonasResponse(run_id=run_id, personas=personas)
     if req.departments:
         agent_ids: list[str] = []
         for dept in req.departments:
@@ -268,15 +295,32 @@ async def run_simulation(req: RunSimulationRequest) -> RunSimulationResponse:
     ctx_max = int(req.swarm_context_messages or sim_cfg.get("swarm_context_messages") or 120)
 
     if engine == "swarm":
-        departments = sorted({str(p.get("department", "Sales")) for p in req.personas})
+        seen_ids: list[str] = []
+        seen_set: set[str] = set()
+        for p in req.personas:
+            raw = str(p.get("username") or p.get("agent_id") or "").strip()
+            stem = template_stem_from_swarm_username(raw)
+            if stem and stem not in seen_set:
+                seen_set.add(stem)
+                seen_ids.append(stem)
         rng_seed = hash(run_id) & 0xFFFF_FFFF
-        personas = build_swarm_personas(
-            req.decision,
-            list(departments),
-            swarm_n,
-            rng=random.Random(rng_seed),
-        )
-        platform: DecisionCascadePlatform | SwarmCascadePlatform = SwarmCascadePlatform(
+        if seen_ids:
+            personas = build_swarm_personas(
+                req.decision,
+                [],
+                swarm_n,
+                rng=random.Random(rng_seed),
+                template_ids=seen_ids,
+            )
+        else:
+            departments = sorted({str(p.get("department", "Sales")) for p in req.personas})
+            personas = build_swarm_personas(
+                req.decision,
+                list(departments),
+                swarm_n,
+                rng=random.Random(rng_seed),
+            )
+        platform = SwarmCascadePlatform(
             req.decision,
             max_active_per_round=max_act,
             peer_recent_count=peer_r,
@@ -353,14 +397,31 @@ async def stream_simulation(req: RunSimulationRequest) -> StreamingResponse:
     ctx_max = int(req.swarm_context_messages or sim_cfg.get("swarm_context_messages") or 120)
 
     if engine == "swarm":
-        departments = sorted({str(p.get("department", "Sales")) for p in req.personas})
+        seen_ids: list[str] = []
+        seen_set: set[str] = set()
+        for p in req.personas:
+            raw = str(p.get("username") or p.get("agent_id") or "").strip()
+            stem = template_stem_from_swarm_username(raw)
+            if stem and stem not in seen_set:
+                seen_set.add(stem)
+                seen_ids.append(stem)
         rng_seed = hash(run_id) & 0xFFFF_FFFF
-        personas = build_swarm_personas(
-            req.decision,
-            list(departments),
-            swarm_n,
-            rng=random.Random(rng_seed),
-        )
+        if seen_ids:
+            personas = build_swarm_personas(
+                req.decision,
+                [],
+                swarm_n,
+                rng=random.Random(rng_seed),
+                template_ids=seen_ids,
+            )
+        else:
+            departments = sorted({str(p.get("department", "Sales")) for p in req.personas})
+            personas = build_swarm_personas(
+                req.decision,
+                list(departments),
+                swarm_n,
+                rng=random.Random(rng_seed),
+            )
         platform: DecisionCascadePlatform | SwarmCascadePlatform = SwarmCascadePlatform(
             req.decision,
             max_active_per_round=max_act,
