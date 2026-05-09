@@ -7,11 +7,42 @@ import type { SimulationEvent } from '@/lib/types'
 const W = 900
 const H = 520
 
+/** Exact legacy keys + CivicBridge advisor lane labels; unknown dept uses keyword or hash fallback. */
 const DEPT_COLORS: Record<string, string> = {
   Sales: '#185FA5',
   Finance: '#854F0B',
   Operations: '#0F6E56',
   HR: '#534AB7',
+  Engineering: '#0ea5e9',
+  Marketing: '#db2777',
+  'Founder Immigration — Evidence': '#7c3aed',
+  'Founder Immigration — Counsel': '#1d4ed8',
+  'Tax & payroll posture': '#854F0B',
+  'Founder readiness': '#0d9488',
+}
+
+function _hashHue(dept: string): string {
+  let h = 0
+  for (let i = 0; i < dept.length; i += 1) {
+    h = (h * 31 + dept.charCodeAt(i)) % 360
+  }
+  return `hsl(${h}, 55%, 42%)`
+}
+
+function fillForDept(dept: string): string {
+  if (DEPT_COLORS[dept]) return DEPT_COLORS[dept]
+  const lower = dept.toLowerCase()
+  if (lower.includes('immigration') || lower.includes('counsel') || lower.includes('attorney'))
+    return '#1d4ed8'
+  if (lower.includes('evidence') || lower.includes('coach')) return '#7c3aed'
+  if (lower.includes('tax') || lower.includes('payroll')) return '#854F0B'
+  if (lower.includes('health')) return '#0f766e'
+  if (lower.includes('housing') || lower.includes('lease')) return '#c2410c'
+  if (lower.includes('bank') || lower.includes('credit')) return '#0369a1'
+  if (lower.includes('founder') || lower.includes('mentor')) return '#0d9488'
+  if (lower.includes('banking')) return '#0369a1'
+  if (lower.includes('local') || lower.includes('systems')) return '#4f46e5'
+  return _hashHue(dept)
 }
 
 interface SwarmNode extends d3.SimulationNodeDatum {
@@ -144,7 +175,7 @@ export function SwarmInteractionGraph({ events }: Props) {
     node
       .append('circle')
       .attr('r', (d) => Math.min(18, 8 + d.msgs * 1.2))
-      .attr('fill', (d) => DEPT_COLORS[d.dept] ?? '#6b7280')
+      .attr('fill', (d) => fillForDept(d.dept))
       .attr('stroke', '#fff')
       .attr('stroke-width', 2)
 
