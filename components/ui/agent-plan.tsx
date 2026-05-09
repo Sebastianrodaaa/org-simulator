@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import type { SimulationEvent } from "@/lib/types";
 import {
   CheckCircle2,
   Circle,
   CircleAlert,
-  CircleDotDashed,
   CircleX,
 } from "lucide-react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
@@ -70,13 +69,13 @@ interface Task {
   subtasks: Subtask[];
 }
 
-// OrgSim simulation pipeline steps
+// CivicBridge simulation pipeline steps
 const initialTasks: Task[] = [
   {
     id: "1",
-    title: "Load Departmental Seed Reports",
+    title: "Load Situation Snapshots",
     description:
-      "Read TypeDB-generated markdown reports for each department to ground agent reasoning in real org data.",
+      "Read structured notes for each advisor perspective to ground reasoning in the user's real situation.",
     status: "completed",
     priority: "high",
     level: 0,
@@ -84,7 +83,7 @@ const initialTasks: Task[] = [
     subtasks: [
       {
         id: "1.1",
-        title: "Sales seed report",
+        title: "Founder evidence snapshot",
         description:
           "Pipeline value $4.2M, 25 open deals, win-rate 34%, Q4 close targets at risk.",
         status: "completed",
@@ -93,16 +92,16 @@ const initialTasks: Task[] = [
       },
       {
         id: "1.2",
-        title: "Finance seed report",
+        title: "Timeline snapshot",
         description:
-          "Q4 marketing budget $280K, runway 18 months, burn $620K/mo.",
+          "evidence roadmap budget $280K, runway 18 months, burn $620K/mo.",
         status: "completed",
         priority: "high",
         tools: ["typedb", "file-system"],
       },
       {
         id: "1.3",
-        title: "Operations seed report",
+        title: "Company operations snapshot",
         description:
           "Engineering capacity 94%, DevOps 88%, 3 open incidents, infra cost rising.",
         status: "completed",
@@ -111,7 +110,7 @@ const initialTasks: Task[] = [
       },
       {
         id: "1.4",
-        title: "HR seed report",
+        title: "Family needs snapshot",
         description:
           "142 headcount, attrition 11%, 18 open reqs, top-performer flight risk in Sales.",
         status: "completed",
@@ -132,7 +131,7 @@ const initialTasks: Task[] = [
     subtasks: [
       {
         id: "2.1",
-        title: "CFO — cost-control bias",
+        title: "Immigration Attorney — cost-control bias",
         description:
           "Prioritises runway preservation, pushes back on discretionary spend, approves cuts that reduce burn.",
         status: "completed",
@@ -141,7 +140,7 @@ const initialTasks: Task[] = [
       },
       {
         id: "2.2",
-        title: "VP Sales — pipeline bias",
+        title: "Evidence Coach — pipeline bias",
         description:
           "Defends marketing budget as pipeline fuel, flags Q4 revenue risk if spend drops.",
         status: "in-progress",
@@ -150,7 +149,7 @@ const initialTasks: Task[] = [
       },
       {
         id: "2.3",
-        title: "Ops Lead — capacity bias",
+        title: "Founder Mentor — capacity bias",
         description:
           "Flags overcommitment risk; engineering already at 94% — any scope creep triggers alert.",
         status: "pending",
@@ -159,7 +158,7 @@ const initialTasks: Task[] = [
       },
       {
         id: "2.4",
-        title: "HR Director — retention bias",
+        title: "Tax Navigator — retention bias",
         description:
           "Monitors morale signal; budget cuts that threaten commission plans raise flight-risk score.",
         status: "pending",
@@ -172,7 +171,7 @@ const initialTasks: Task[] = [
     id: "3",
     title: "Trace Cascade Impact",
     description:
-      "Query TypeDB CrossDeptDependency graph to map which departments are downstream of the decision.",
+      "Map which advisor perspectives and life systems are downstream of the decision.",
     status: "pending",
     priority: "high",
     level: 1,
@@ -182,7 +181,7 @@ const initialTasks: Task[] = [
         id: "3.1",
         title: "Primary impact — Finance → Sales",
         description:
-          "20% marketing cut directly reduces lead generation, compressing Sales pipeline.",
+          "20% marketing cut directly reduces lead generation, compressing evidence timeline.",
         status: "pending",
         priority: "high",
         tools: ["typedb", "cascade-tracer"],
@@ -230,7 +229,7 @@ const initialTasks: Task[] = [
         id: "4.2",
         title: "Rounds 6–15: cross-agent pressure",
         description:
-          "Agents read peers' posts and escalate or moderate positions; emergent conflicts surface.",
+          "Agents read peers' posts and escalate or moderate positions; emergent risks surface.",
         status: "pending",
         priority: "high",
         tools: ["mirofish", "ollama", "nats"],
@@ -239,7 +238,7 @@ const initialTasks: Task[] = [
         id: "4.3",
         title: "Rounds 16–20: stabilisation",
         description:
-          "Agents attempt negotiation; unresolved positions are flagged as persistent conflicts.",
+          "Agents attempt negotiation; unresolved positions are flagged as persistent risks.",
         status: "pending",
         priority: "medium",
         tools: ["mirofish", "ollama", "nats"],
@@ -258,7 +257,7 @@ const initialTasks: Task[] = [
     subtasks: [
       {
         id: "5.1",
-        title: "Classify conflict type",
+        title: "Classify risk type",
         description:
           "DSPy signature infers budget / resource / priority / timeline from message pair content.",
         status: "pending",
@@ -278,7 +277,7 @@ const initialTasks: Task[] = [
         id: "5.3",
         title: "Publish to NATS",
         description:
-          "Each ConflictDict emitted to orgsim.simulation.{run_id}.conflict for live UI relay.",
+          "Each risk signal is emitted to the live UI relay.",
         status: "pending",
         priority: "medium",
         tools: ["nats-jetstream"],
@@ -289,7 +288,7 @@ const initialTasks: Task[] = [
     id: "6",
     title: "Generate Executive Report",
     description:
-      "DSPy pipeline compiles cascade map + conflict summaries into a board-ready decision impact report.",
+      "DSPy pipeline compiles risk map and advisor summaries into a practical action report.",
     status: "pending",
     priority: "high",
     level: 1,
@@ -297,7 +296,7 @@ const initialTasks: Task[] = [
     subtasks: [
       {
         id: "6.1",
-        title: "Summarise each conflict",
+        title: "Summarise each risk",
         description:
           "ConflictSummary DSPy signature produces plain-English summary + recommendation per pair.",
         status: "pending",
@@ -332,9 +331,8 @@ interface PlanProps {
 }
 
 export default function Plan({ events = [], status = "idle" }: PlanProps) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
-
-  useEffect(() => {
+  const [manualTasks, setTasks] = useState<Task[]>(initialTasks);
+  const tasks = useMemo(() => {
     const hasAgentMessages = events.some((e) => e.type === "agent_message");
     const hasConflicts = events.some((e) => e.type === "conflict");
     // Check both the status prop AND whether a complete event is in the stream,
@@ -343,8 +341,7 @@ export default function Plan({ events = [], status = "idle" }: PlanProps) {
       status === "complete" ||
       events.some((e) => (e.type as string) === "complete");
 
-    setTasks((prev) =>
-      prev.map((task) => {
+    return manualTasks.map((task) => {
         let taskStatus = task.status;
         let subtaskOverride: string | null = null;
 
@@ -374,9 +371,8 @@ export default function Plan({ events = [], status = "idle" }: PlanProps) {
             ? task.subtasks.map((s) => ({ ...s, status: subtaskOverride! }))
             : task.subtasks,
         };
-      })
-    );
-  }, [events, status]);
+      });
+  }, [events, manualTasks, status]);
   const [expandedTasks, setExpandedTasks] = useState<string[]>(["1"]);
   const [expandedSubtasks, setExpandedSubtasks] = useState<{
     [key: string]: boolean;
