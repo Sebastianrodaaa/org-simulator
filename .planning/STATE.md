@@ -28,7 +28,7 @@ See [.planning/PROJECT.md](PROJECT.md).
 
 ## Artifacts
 
-- **Milestone archives:** [.planning/milestones/](milestones/) (`v1.0-ROADMAP`, `v1.0-REQUIREMENTS`, `v1.0-MILESTONE-AUDIT`)
+- **Milestone archives:** [.planning/milestones/](milestones/) (`v1.0-ROADMAP`, `v1.0-REQUIREMENTS`, `v1.0-MILESTONE-AUDIT`, `v1.0-phases/`)
 - **History:** [.planning/MILESTONES.md](MILESTONES.md)
 - **Live roadmap (collapsed):** [.planning/ROADMAP.md](ROADMAP.md)
 - **Phase folders:** `.planning/milestones/v1.0-phases/` (v1.0); `.planning/phases/` for next milestone
