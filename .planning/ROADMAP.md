@@ -15,7 +15,7 @@ No active milestone phases. Start the next cycle with `/gsd-new-milestone`.
 
 ## Phase directories
 
-Execution artifacts for v1.0 remain under `.planning/phases/` (optional cleanup: `/gsd-cleanup` or move to `milestones/v1.0-phases/`).
+v1.0 execution tree: [.planning/milestones/v1.0-phases/](milestones/v1.0-phases/). The live `.planning/phases/` folder is reserved for the next milestone.
 
 ---
 *Roadmap collapsed after v1.0 — 2026-05-09*

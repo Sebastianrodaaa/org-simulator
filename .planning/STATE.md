@@ -31,7 +31,7 @@ See [.planning/PROJECT.md](PROJECT.md).
 - **Milestone archives:** [.planning/milestones/](milestones/) (`v1.0-ROADMAP`, `v1.0-REQUIREMENTS`, `v1.0-MILESTONE-AUDIT`)
 - **History:** [.planning/MILESTONES.md](MILESTONES.md)
 - **Live roadmap (collapsed):** [.planning/ROADMAP.md](ROADMAP.md)
-- **Phase folders:** `.planning/phases/` (v1.0 execution tree)
+- **Phase folders:** `.planning/milestones/v1.0-phases/` (v1.0); `.planning/phases/` for next milestone
 
 ## Next step
 

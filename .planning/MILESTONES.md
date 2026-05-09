@@ -18,5 +18,6 @@
 - [.planning/milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 - [.planning/milestones/v1.0-REQUIREMENTS.md](milestones/v1.0-REQUIREMENTS.md)
 - [.planning/milestones/v1.0-MILESTONE-AUDIT.md](milestones/v1.0-MILESTONE-AUDIT.md)
+- [.planning/milestones/v1.0-phases/](milestones/v1.0-phases/) — phase execution tree (01–06)
 
 ---
