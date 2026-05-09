@@ -2,24 +2,112 @@
 
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { BriefcaseBusiness, Compass, ShieldCheck } from 'lucide-react'
 import { startSimulation, type SimulationEngine } from '@/lib/api'
 import { useSimulationStream } from '@/lib/useSimulationStream'
 import { ConflictGraph } from '@/components/ConflictGraph'
 import { SwarmInteractionGraph } from '@/components/SwarmInteractionGraph'
 import Plan from '@/components/ui/agent-plan'
-import type { ConflictDict, MessageDict, SimulationEvent } from '@/lib/types'
+import type {
+  CivicBridgeTrack,
+  ConflictDict,
+  GuidedScenario,
+  KeyFacts,
+  MessageDict,
+  SimulationEvent,
+} from '@/lib/types'
 import { eventsToConflicts, eventsToMessages } from '@/lib/wireSimulationEvents'
 
-const ALL_DEPTS = ['Sales', 'Finance', 'Operations', 'HR'] as const
+const COMPATIBILITY_DEPTS = ['Sales', 'Finance', 'Operations', 'HR'] as const
 
-const DEMO_DECISION =
-  'The CFO has decided to cut the Q4 marketing budget by 20%.\nSimulate the organizational cascade over the next 90 days.'
+const EMPTY_KEY_FACTS: KeyFacts = {
+  currentStatus: '',
+  goal: '',
+  deadline: '',
+  location: '',
+  workCompanyFacts: '',
+  familyDependents: '',
+}
 
-const DEPT_COLOR: Record<string, string> = {
-  Sales: '#185FA5',
-  Finance: '#854F0B',
-  Operations: '#0F6E56',
-  HR: '#534AB7',
+const TRACKS: Record<
+  CivicBridgeTrack,
+  { label: string; subtext: string; accent: string; icon: typeof BriefcaseBusiness }
+> = {
+  founder: {
+    label: 'Founder Immigration',
+    subtext: 'Visa, company, work strategy',
+    accent: '#0f766e',
+    icon: BriefcaseBusiness,
+  },
+  first1000: {
+    label: 'First 1000 Days',
+    subtext: 'Banking, health, housing, taxes',
+    accent: '#2563eb',
+    icon: Compass,
+  },
+}
+
+const GUIDED_SCENARIOS: GuidedScenario[] = [
+  {
+    id: 'founder-pathway-rehearsal',
+    track: 'founder',
+    title: 'Founder pathway rehearsal',
+    description: 'Compare O-1, EB-1A, International Entrepreneur Rule, company setup, runway timing, and staying in the US.',
+    situation:
+      'I am an immigrant founder trying to stay in the US while building a company. I want to compare O-1, EB-1A, and the International Entrepreneur Rule, understand company setup needs, and avoid runway timing surprises.',
+    keyFacts: {
+      currentStatus: 'In the US on a temporary status',
+      goal: 'Keep building the company while preparing a stronger long-term pathway',
+      deadline: 'Need a credible plan before the next funding and status milestone',
+      location: 'United States',
+      workCompanyFacts: 'Early-stage company, US customers, evidence still scattered',
+      familyDependents: 'Need to understand dependent impact before acting',
+    },
+    uncertaintyChips: ['I need professional review', 'Deadline is uncertain', 'I am worried about sharing details'],
+  },
+  {
+    id: 'first-90-days-setup',
+    track: 'first1000',
+    title: 'First 90 days setup',
+    description: 'Sequence SSN/ITIN, bank account, credit, health coverage, housing, taxes, and local rights.',
+    situation:
+      'I recently arrived and need to sequence the first setup decisions: SSN/ITIN, bank account, credit, health coverage, housing, taxes, and local rights without missing a deadline.',
+    keyFacts: {
+      currentStatus: 'Recently arrived and still learning local systems',
+      goal: 'Build a stable first-90-days setup plan',
+      deadline: 'Need the basics in place over the next three months',
+      location: 'United States',
+      workCompanyFacts: 'Income and paperwork are still changing',
+      familyDependents: 'Family needs may affect health coverage and housing choices',
+    },
+    uncertaintyChips: ['I am not sure about my status', 'Money is tight', 'I do not know which agency applies'],
+  },
+]
+
+const KEY_FACT_FIELDS: Array<{ key: keyof KeyFacts; label: string; placeholder: string }> = [
+  { key: 'currentStatus', label: 'Current status', placeholder: 'Current visa, arrival, or setup status' },
+  { key: 'goal', label: 'Goal', placeholder: 'What you are trying to make possible' },
+  { key: 'deadline', label: 'Deadline', placeholder: 'Key date or timing pressure' },
+  { key: 'location', label: 'Location', placeholder: 'City, state, or country context' },
+  { key: 'workCompanyFacts', label: 'Work or company facts', placeholder: 'Employer, company, income, or evidence notes' },
+  { key: 'familyDependents', label: 'Family or dependents', placeholder: 'Who else is affected' },
+]
+
+const UNCERTAINTY_CHIPS = [
+  'I am not sure about my status',
+  'Deadline is uncertain',
+  'I need professional review',
+  'Money is tight',
+  'I do not know which agency applies',
+  'I am worried about sharing details',
+]
+
+const SAFETY_NOTE =
+  'CivicBridge is a planning aid, not legal advice. It helps organize risks, questions, and next steps so you can verify details with official sources or a qualified professional. Avoid entering documents or secrets in this demo.'
+
+const ADVISOR_PREVIEW: Record<CivicBridgeTrack, string[]> = {
+  founder: ['Immigration Attorney', 'Evidence Coach', 'Founder Mentor', 'Tax/Company Navigator'],
+  first1000: ['Banking', 'Healthcare', 'Housing', 'Tax', 'Local Systems'],
 }
 
 const SEVERITY_BADGE: Record<ConflictDict['severity'], string> = {
@@ -37,17 +125,6 @@ const CONFLICT_TYPE_BADGE: Record<ConflictDict['conflict_type'], string> = {
 
 const SEVERITY_EDGE: Record<string, string> = {
   low: '#fbbf24', medium: '#f97316', high: '#ef4444',
-}
-
-function relativeTime(ts: string): string {
-  const diff = Math.floor((Date.now() - new Date(ts).getTime()) / 1000)
-  if (diff < 5) return 'just now'
-  if (diff < 60) return `${diff}s ago`
-  return `${Math.floor(diff / 60)}m ago`
-}
-
-function initials(role: string): string {
-  return role.split(/[\s_]/).map((w) => w[0]).join('').toUpperCase().slice(0, 2)
 }
 
 function swarmStats(events: SimulationEvent[]) {
@@ -74,46 +151,33 @@ function swarmStats(events: SimulationEvent[]) {
   }
 }
 
-function AgentFeedSkeleton() {
-  return (
-    <div className="space-y-3">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="flex gap-2.5">
-          <div className="animate-pulse flex-shrink-0 w-7 h-7 rounded-full bg-gray-200" />
-          <div className="flex-1 space-y-1.5 pt-0.5">
-            <div className="flex gap-2">
-              <div className="animate-pulse h-3.5 w-14 rounded bg-gray-200" />
-              <div className="animate-pulse h-3.5 w-20 rounded bg-gray-200" />
-            </div>
-            <div className="animate-pulse h-3 w-full rounded bg-gray-200" />
-            <div className="animate-pulse h-3 w-3/4 rounded bg-gray-200" />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 function SimulateInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isDemo = searchParams.get('demo') === 'true'
+  const defaultScenario = GUIDED_SCENARIOS.find((scenario) => scenario.track === 'founder')!
 
-  const [decision, setDecision] = useState(DEMO_DECISION)
-  const [selectedDepts, setSelectedDepts] = useState<string[]>([...ALL_DEPTS])
+  const [track, setTrack] = useState<CivicBridgeTrack>('founder')
+  const [decision, setDecision] = useState(defaultScenario.situation)
+  const [selectedScenarioId, setSelectedScenarioId] = useState(defaultScenario.id)
+  const [keyFacts, setKeyFacts] = useState<KeyFacts>(defaultScenario.keyFacts)
+  const [selectedUncertaintyChips, setSelectedUncertaintyChips] = useState<string[]>(defaultScenario.uncertaintyChips)
   const [runId, setRunId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [engine, setEngine] = useState<SimulationEngine>('swarm')
-  const [swarmSize, setSwarmSize] = useState(48)
+  const [swarmSize, setSwarmSize] = useState(24)
+  const [maxActivePerRound, setMaxActivePerRound] = useState(8)
   const feedRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isDemo) {
-      setDecision(DEMO_DECISION)
-      setSelectedDepts([...ALL_DEPTS])
+      setDecision(defaultScenario.situation)
+      setKeyFacts(defaultScenario.keyFacts)
+      setSelectedUncertaintyChips(defaultScenario.uncertaintyChips)
+      setSelectedScenarioId(defaultScenario.id)
     }
-  }, [isDemo])
+  }, [defaultScenario.id, defaultScenario.keyFacts, defaultScenario.situation, defaultScenario.uncertaintyChips, isDemo])
 
   const { events, status } = useSimulationStream(runId)
   const messages: MessageDict[] = eventsToMessages(events)
@@ -126,24 +190,80 @@ function SimulateInner() {
     }
   }, [messages.length])
 
-  function toggleDept(dept: string) {
+  function selectTrack(nextTrack: CivicBridgeTrack) {
     if (runId) return
-    setSelectedDepts((prev) =>
-      prev.includes(dept) ? prev.filter((d) => d !== dept) : [...prev, dept],
+    setTrack(nextTrack)
+    const scenario = GUIDED_SCENARIOS.find((item) => item.track === nextTrack)
+    if (scenario) {
+      setDecision(scenario.situation)
+      setKeyFacts(scenario.keyFacts)
+      setSelectedUncertaintyChips(scenario.uncertaintyChips)
+      setSelectedScenarioId(scenario.id)
+    } else {
+      setKeyFacts(EMPTY_KEY_FACTS)
+      setSelectedScenarioId('')
+      setSelectedUncertaintyChips([])
+    }
+  }
+
+  function selectScenario(scenario: GuidedScenario) {
+    if (runId) return
+    setTrack(scenario.track)
+    setDecision(scenario.situation)
+    setKeyFacts(scenario.keyFacts)
+    setSelectedUncertaintyChips(scenario.uncertaintyChips)
+    setSelectedScenarioId(scenario.id)
+  }
+
+  function updateKeyFact(key: keyof KeyFacts, value: string) {
+    setKeyFacts((current) => ({ ...current, [key]: value }))
+  }
+
+  function toggleUncertaintyChip(chip: string) {
+    if (runId) return
+    setSelectedUncertaintyChips((current) =>
+      current.includes(chip) ? current.filter((item) => item !== chip) : [...current, chip],
     )
   }
 
+  function buildScenarioText() {
+    const nonEmptyFacts = KEY_FACT_FIELDS
+      .map((field) => [field.label, keyFacts[field.key].trim()] as const)
+      .filter(([, value]) => value.length > 0)
+      .map(([label, value]) => `- ${label}: ${value}`)
+      .join('\n')
+
+    const uncertaintyText = selectedUncertaintyChips.length
+      ? selectedUncertaintyChips.map((chip) => `- ${chip}`).join('\n')
+      : '- None selected'
+
+    return [
+      `Track: ${TRACKS[track].label}`,
+      '',
+      'Situation:',
+      decision.trim(),
+      '',
+      'Key facts:',
+      nonEmptyFacts || '- Not provided yet',
+      '',
+      'Uncertainty and review flags:',
+      uncertaintyText,
+    ].join('\n')
+  }
+
   async function handleRun() {
-    if (!decision.trim() || selectedDepts.length === 0) return
+    if (!decision.trim()) return
     setLoading(true)
     setError(null)
     try {
-      const run = await startSimulation(decision, selectedDepts, {
+      const run = await startSimulation(buildScenarioText(), [...COMPATIBILITY_DEPTS], {
         engine,
-        rounds: engine === 'swarm' ? 10 : 15,
+        rounds: engine === 'swarm' ? 4 : 15,
         swarmSize: engine === 'swarm' ? swarmSize : undefined,
+        maxActivePerRound: engine === 'swarm' ? maxActivePerRound : undefined,
       })
       setRunId(run.run_id)
+      localStorage.setItem('civicbridge_last_run_id', run.run_id)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to start simulation')
     } finally {
@@ -165,41 +285,122 @@ function SimulateInner() {
           {isDemo && !runId && (
             <div className="rounded-md bg-blue-50 border border-blue-200 px-3 py-2 text-xs text-blue-700 flex items-center gap-2">
               <span className="font-semibold">Demo mode</span>
-              <span className="text-blue-400">—</span>
-              <span>Pre-filled with CFO budget scenario. Press Run to begin.</span>
+              <span className="text-blue-400">-</span>
+              <span>Pre-filled with a founder pathway rehearsal. Press Run to begin.</span>
             </div>
           )}
 
-          {/* Scenario input */}
           <section className="space-y-3">
-            <h2 className="text-sm font-semibold text-gray-900">Scenario</h2>
-            <textarea
-              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 min-h-[88px] disabled:bg-gray-50 disabled:text-gray-500"
-              rows={4}
-              placeholder="Describe the decision to simulate..."
-              value={decision}
-              onChange={(e) => setDecision(e.target.value)}
-              disabled={!!runId}
-            />
-            <div className="flex flex-wrap gap-1.5">
-              {ALL_DEPTS.map((dept) => {
-                const active = selectedDepts.includes(dept)
-                return (
-                  <button
-                    key={dept}
-                    onClick={() => toggleDept(dept)}
+            <div className="space-y-2">
+              <h2 className="text-sm font-semibold text-gray-900">Choose a track</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {(Object.keys(TRACKS) as CivicBridgeTrack[]).map((trackId) => {
+                  const item = TRACKS[trackId]
+                  const Icon = item.icon
+                  const active = track === trackId
+                  return (
+                    <button
+                      key={trackId}
+                      type="button"
+                      onClick={() => selectTrack(trackId)}
+                      disabled={!!runId}
+                      className={`rounded-md border px-3 py-2 text-left transition-colors disabled:cursor-not-allowed ${
+                        active ? 'bg-gray-950 text-white border-gray-950' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 text-sm font-semibold">
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        {item.label}
+                      </span>
+                      <span className={`mt-1 block text-xs ${active ? 'text-gray-200' : 'text-gray-500'}`}>{item.subtext}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-sm font-semibold text-gray-900">Start from a demo scenario</h2>
+              <div className="space-y-2">
+                {GUIDED_SCENARIOS.filter((scenario) => scenario.track === track).map((scenario) => {
+                  const active = selectedScenarioId === scenario.id
+                  return (
+                    <button
+                      key={scenario.id}
+                      type="button"
+                      onClick={() => selectScenario(scenario)}
+                      disabled={!!runId}
+                      className={`w-full rounded-md border px-3 py-2 text-left transition-colors disabled:cursor-not-allowed ${
+                        active ? 'border-gray-900 bg-gray-50' : 'border-gray-200 bg-white hover:border-gray-400'
+                      }`}
+                    >
+                      <span className="block text-sm font-semibold text-gray-900">{scenario.title}</span>
+                      <span className="mt-1 block text-xs leading-5 text-gray-500">{scenario.description}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-sm font-semibold text-gray-900">Situation</h2>
+              <textarea
+                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 min-h-[108px] disabled:bg-gray-50 disabled:text-gray-500"
+                rows={5}
+                placeholder="Describe your goal, current status, deadline, location, and what feels uncertain."
+                value={decision}
+                onChange={(e) => {
+                  setDecision(e.target.value)
+                  setSelectedScenarioId('')
+                }}
+                disabled={!!runId}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {KEY_FACT_FIELDS.map((field) => (
+                <label key={field.key} className="space-y-1">
+                  <span className="text-xs font-semibold text-gray-700">{field.label}</span>
+                  <input
+                    value={keyFacts[field.key]}
+                    onChange={(event) => updateKeyFact(field.key, event.target.value)}
                     disabled={!!runId}
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors touch-manipulation ${
-                      active
-                        ? 'text-white border-transparent'
-                        : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
-                    } disabled:cursor-not-allowed`}
-                    style={active ? { backgroundColor: DEPT_COLOR[dept] } : {}}
-                  >
-                    {dept}
-                  </button>
-                )
-              })}
+                    placeholder={field.placeholder}
+                    className="w-full rounded-md border border-gray-200 px-2.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:bg-gray-50 disabled:text-gray-500"
+                  />
+                </label>
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-xs font-semibold text-gray-700">Uncertainty and privacy</h3>
+              <div className="flex flex-wrap gap-1.5">
+                {UNCERTAINTY_CHIPS.map((chip) => {
+                  const active = selectedUncertaintyChips.includes(chip)
+                  return (
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => toggleUncertaintyChip(chip)}
+                      disabled={!!runId}
+                      className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-colors disabled:cursor-not-allowed ${
+                        active ? 'border-transparent text-white' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
+                      }`}
+                      style={active ? { backgroundColor: TRACKS[track].accent } : undefined}
+                    >
+                      {chip}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-800">
+              <span className="inline-flex items-center gap-1.5 font-semibold">
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                Safety note
+              </span>
+              <p className="mt-1">{SAFETY_NOTE}</p>
             </div>
 
             <div className="space-y-2">
@@ -214,7 +415,7 @@ function SimulateInner() {
                     disabled={!!runId}
                     className="accent-gray-900"
                   />
-                  Cascade (4 roles / round)
+                  Cascade
                 </label>
                 <label className="inline-flex items-center gap-1.5 cursor-pointer">
                   <input
@@ -225,34 +426,48 @@ function SimulateInner() {
                     disabled={!!runId}
                     className="accent-gray-900"
                   />
-                  Swarm (large pool)
+                  Swarm
                 </label>
               </div>
               {engine === 'swarm' && (
-                <label className="flex items-center gap-2 text-xs text-gray-600">
-                  <span className="whitespace-nowrap">Pool size</span>
-                  <input
-                    type="number"
-                    min={16}
-                    max={256}
-                    step={8}
-                    value={swarmSize}
-                    onChange={(e) => setSwarmSize(Number(e.target.value) || 48)}
-                    disabled={!!runId}
-                    className="w-20 rounded border border-gray-200 px-2 py-1 text-xs"
-                  />
-                </label>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+                  <label className="flex items-center gap-2">
+                    <span className="whitespace-nowrap">Pool size</span>
+                    <input
+                      type="number"
+                      min={16}
+                      max={256}
+                      step={8}
+                      value={swarmSize}
+                      onChange={(e) => setSwarmSize(Number(e.target.value) || 24)}
+                      disabled={!!runId}
+                      className="w-20 rounded border border-gray-200 px-2 py-1 text-xs"
+                    />
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <span className="whitespace-nowrap">Active/round</span>
+                    <input
+                      type="number"
+                      min={4}
+                      max={24}
+                      step={1}
+                      value={maxActivePerRound}
+                      onChange={(e) => setMaxActivePerRound(Number(e.target.value) || 8)}
+                      disabled={!!runId}
+                      className="w-20 rounded border border-gray-200 px-2 py-1 text-xs"
+                    />
+                  </label>
+                </div>
               )}
-
             </div>
 
             {error && <p className="text-red-500 text-xs break-words">{error}</p>}
             <button
               onClick={handleRun}
-              disabled={loading || !!runId || selectedDepts.length === 0}
+              disabled={loading || !!runId || !decision.trim()}
               className="w-full px-4 py-2 rounded-md bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Starting...' : runId ? 'Simulation running' : 'Run simulation'}
+              {loading ? 'Starting...' : runId ? 'Rehearsal running' : 'Run rehearsal'}
             </button>
           </section>
 
@@ -279,13 +494,13 @@ function SimulateInner() {
             </section>
           )}
 
-          {/* Conflicts list — compact */}
+          {/* Risks list */}
           {runId && conflicts.length > 0 && (
             <>
               <div className="border-t border-gray-100" />
               <section className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-gray-900">Detected conflicts</h2>
+                  <h2 className="text-sm font-semibold text-gray-900">Detected risks</h2>
                   <span className="px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-semibold">
                     {conflicts.length}
                   </span>
@@ -325,7 +540,7 @@ function SimulateInner() {
               onClick={() => router.push(`/report/${runId}`)}
               className="w-full px-4 py-2 rounded-md bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors"
             >
-              View simulation report →
+              View action report →
             </button>
           )}
         </div>
@@ -338,7 +553,7 @@ function SimulateInner() {
         <div className="flex-shrink-0 px-5 py-3 border-b border-gray-200 bg-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <span className="font-semibold text-sm text-gray-900">
-              {engine === 'swarm' ? 'Swarm Interaction Graph' : 'Org Network'}
+              {!runId ? 'Risk Map Preview' : engine === 'swarm' ? 'Advisor Deliberation' : 'Risk Map'}
             </span>
             {isLive && (
               <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
@@ -361,17 +576,41 @@ function SimulateInner() {
               </>
             )}
             {conflicts.length > 0 && (
-              <span className="text-red-500 font-medium">{conflicts.length} conflict{conflicts.length !== 1 ? 's' : ''}</span>
+              <span className="text-red-500 font-medium">{conflicts.length} risk{conflicts.length !== 1 ? 's' : ''}</span>
             )}
             {!runId && (
-              <span className="text-gray-400">Run a scenario to see cascade</span>
+              <span className="text-gray-400">Run a rehearsal to see risks</span>
             )}
           </div>
         </div>
 
         {/* Graph */}
         <div className="flex-1 min-h-0 p-2">
-          {engine === 'swarm' ? (
+          {!runId ? (
+            <div className="h-full rounded-md border border-gray-200 bg-white p-5 flex flex-col">
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900">Risk Map Preview</h2>
+                <p className="mt-1 text-xs leading-5 text-gray-500">
+                  Run a rehearsal to see advisor perspectives, risks, and next steps appear here.
+                </p>
+              </div>
+              <div className="mt-5 grid flex-1 min-h-[240px] grid-cols-2 gap-3 content-center sm:grid-cols-3">
+                {ADVISOR_PREVIEW[track].map((advisor, index) => (
+                  <div
+                    key={advisor}
+                    className="min-h-24 rounded-md border border-gray-200 bg-gray-50 px-3 py-3 flex flex-col justify-between"
+                  >
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: TRACKS[track].accent, opacity: 0.65 + index * 0.07 }}
+                    />
+                    <span className="text-xs font-semibold leading-4 text-gray-800">{advisor}</span>
+                    <span className="text-[10px] text-gray-400">advisor perspective</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : engine === 'swarm' ? (
             <SwarmInteractionGraph events={events} />
           ) : (
             <ConflictGraph conflicts={conflicts} messages={messages} />
@@ -382,7 +621,7 @@ function SimulateInner() {
         <div className="flex-shrink-0 px-5 py-2.5 border-t border-gray-100 bg-white flex items-center gap-4 flex-wrap">
           {engine === 'swarm' ? (
             <>
-              <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Swarm legend</span>
+              <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Advisor legend</span>
               <span className="text-[10px] text-gray-500">Node size = message volume</span>
               <span className="text-[10px] text-gray-500">Arrow = next speaker in same round</span>
             </>
