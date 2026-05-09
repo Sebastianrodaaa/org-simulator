@@ -2,8 +2,8 @@
 
 **Project:** CivicBridge Simulator
 **Initialized:** 2026-05-09
-**Current phase:** Phase 1 - Product Shell and Intake
-**Status:** Ready to execute
+**Current phase:** Phase 2 - Advisor Simulation Conversion
+**Status:** Phase 1 complete; ready to discuss Phase 2
 **Workflow mode:** YOLO
 
 ## Project Reference
@@ -12,7 +12,7 @@ See: `.planning/PROJECT.md` (updated 2026-05-09)
 
 **Core value:** Help immigrants and immigrant founders rehearse a complex life or visa decision before acting, surfacing risks, missing evidence, timeline collisions, and next steps in plain language.
 
-**Current focus:** Phase 1 - turn the first screen into an immigration-focused two-track scenario tool.
+**Current focus:** Phase 2 - replace backend/org personas with immigration and systems-navigation advisor simulations.
 
 ## Artifacts
 
@@ -29,6 +29,12 @@ See: `.planning/PROJECT.md` (updated 2026-05-09)
   - `.planning/phases/01-product-shell-and-intake/01-01-PLAN.md`
   - `.planning/phases/01-product-shell-and-intake/01-02-PLAN.md`
   - `.planning/phases/01-product-shell-and-intake/01-03-PLAN.md`
+- Phase 1 summaries:
+  - `.planning/phases/01-product-shell-and-intake/01-01-SUMMARY.md`
+  - `.planning/phases/01-product-shell-and-intake/01-02-SUMMARY.md`
+  - `.planning/phases/01-product-shell-and-intake/01-03-SUMMARY.md`
+- Phase 1 review: `.planning/phases/01-product-shell-and-intake/01-REVIEW.md`
+- Phase 1 verification: `.planning/phases/01-product-shell-and-intake/01-VERIFICATION.md`
 
 ## Decisions
 
@@ -38,9 +44,15 @@ See: `.planning/PROJECT.md` (updated 2026-05-09)
 - Keep web-first hackathon scope.
 - Include legal-safety caveats.
 
+## Completed
+
+- Phase 1 - Product Shell and Intake completed 2026-05-09.
+- `/simulate` is now the CivicBridge primary experience with track selection, guided scenarios, structured facts, uncertainty chips, safety copy, and advisor preview.
+- Frontend lint, TypeScript, build, and visible-copy checks passed.
+
 ## Next Step
 
-Run `$gsd-execute-phase 1` to execute all 3 Phase 1 plans.
+Run `$gsd-discuss-phase 2` to gather decisions for Advisor Simulation Conversion.
 
 ---
-*Last updated: 2026-05-09 after Phase 1 planning*
+*Last updated: 2026-05-09 after Phase 1 execution*

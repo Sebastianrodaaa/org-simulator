@@ -19,16 +19,18 @@ Help immigrants and immigrant founders rehearse a complex life or visa decision 
 - ✓ Existing frontend can render a scenario input, live activity feed, interaction graph, detected conflicts, and report route — existing Next.js app
 - ✓ Existing fallback behavior allows demo runs without all external services available — existing rule-based and stub paths
 - ✓ Existing codebase map documents stack, architecture, conventions, integrations, testing, and concerns — mapped on 2026-05-09
+- ✓ CivicBridge product shell and primary simulator intake are immigration-focused — Phase 1, completed 2026-05-09
+- ✓ Founder Immigration and First 1000 Days tracks, guided scenarios, structured facts, uncertainty chips, and safety copy exist in the primary simulator — Phase 1, completed 2026-05-09
 
 ### Active
 
-- [ ] Rebrand the product from OrgSim to CivicBridge Simulator or an equivalent immigration-focused name.
-- [ ] Replace department/business language with two user-facing tracks: Founder Immigration and Learning to be American.
+- [x] Rebrand the product from OrgSim to CivicBridge Simulator or an equivalent immigration-focused name.
+- [x] Replace department/business language with two user-facing tracks: Founder Immigration and Learning to be American.
 - [ ] Preserve and adapt the simulation workflow so users can run immigration or settlement scenarios through simulated advisor personas.
 - [ ] Create immigration-domain personas, such as immigration attorney, founder mentor, employer/talent lead, evidence coach, tax/finance navigator, healthcare navigator, housing navigator, credit/banking navigator, and cultural systems mentor.
 - [ ] Convert detected "conflicts" into user-centered risks, blockers, evidence gaps, tradeoffs, and timeline collisions.
 - [ ] Produce an action-oriented report with next steps, uncertainty, "not legal advice" caveats, and when to consult a qualified professional.
-- [ ] Add guided demo scenarios that satisfy both hackathon tracks and work reliably without external credentials.
+- [x] Add guided demo scenarios that satisfy both hackathon tracks and work reliably without external credentials.
 - [ ] Keep the implementation narrow enough for a hackathon: one polished combined flow beats many shallow feature stubs.
 
 ### Out of Scope
@@ -74,11 +76,11 @@ The project should be emotionally and practically useful. The user should feel l
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Build a combined two-track product | User selected combined demo to satisfy both hackathon tracks | — Pending |
-| Reuse OrgSim simulation engine | Existing code already supports live multi-agent scenario rehearsal | — Pending |
-| Treat conflicts as risks/blockers | Immigration users need actionable risk framing more than adversarial business conflict framing | — Pending |
-| Keep v1 web-first | Existing Next.js app can be repurposed fastest | — Pending |
-| Include legal-safety caveats in output | Immigration support must avoid pretending to replace qualified counsel | — Pending |
+| Build a combined two-track product | User selected combined demo to satisfy both hackathon tracks | Implemented in Phase 1 intake |
+| Reuse OrgSim simulation engine | Existing code already supports live multi-agent scenario rehearsal | Preserved through frontend compatibility shim |
+| Treat conflicts as risks/blockers | Immigration users need actionable risk framing more than adversarial business conflict framing | Begun in Phase 1 UI; backend/domain conversion continues in Phases 2-3 |
+| Keep v1 web-first | Existing Next.js app can be repurposed fastest | Confirmed by Phase 1 `/simulate` primary flow |
+| Include legal-safety caveats in output | Immigration support must avoid pretending to replace qualified counsel | Phase 1 safety note added before run |
 
 ## Evolution
 
@@ -98,4 +100,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-09 after initialization*
+*Last updated: 2026-05-09 after Phase 1 execution*

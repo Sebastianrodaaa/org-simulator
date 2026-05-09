@@ -9,16 +9,16 @@ Requirements for the hackathon release. Each maps to roadmap phases.
 
 ### Product Shell
 
-- [ ] **SHELL-01**: User sees an immigration-focused product name, navigation, and UI copy instead of OrgSim/business-department branding.
-- [ ] **SHELL-02**: User can choose between Founder Immigration and Learning to be American tracks from the primary simulation screen.
-- [ ] **SHELL-03**: User can start from at least one polished demo scenario for each track.
-- [ ] **SHELL-04**: User can enter a freeform scenario when the guided demos do not fit their situation.
+- [x] **SHELL-01**: User sees an immigration-focused product name, navigation, and UI copy instead of OrgSim/business-department branding.
+- [x] **SHELL-02**: User can choose between Founder Immigration and Learning to be American tracks from the primary simulation screen.
+- [x] **SHELL-03**: User can start from at least one polished demo scenario for each track.
+- [x] **SHELL-04**: User can enter a freeform scenario when the guided demos do not fit their situation.
 
 ### Scenario Intake
 
-- [ ] **INTAKE-01**: User can provide key scenario facts including current status, goal, deadline, location/state, dependents, work/company facts, and known constraints.
-- [ ] **INTAKE-02**: User can mark unknown or uncertain facts without blocking simulation.
-- [ ] **INTAKE-03**: User receives privacy-conscious copy before entering sensitive immigration, financial, health, or housing details.
+- [x] **INTAKE-01**: User can provide key scenario facts including current status, goal, deadline, location/state, dependents, work/company facts, and known constraints.
+- [x] **INTAKE-02**: User can mark unknown or uncertain facts without blocking simulation.
+- [x] **INTAKE-03**: User receives privacy-conscious copy before entering sensitive immigration, financial, health, or housing details.
 
 ### Advisor Simulation
 
@@ -43,7 +43,7 @@ Requirements for the hackathon release. Each maps to roadmap phases.
 
 ### Quality And Safety
 
-- [ ] **SAFE-01**: User-facing copy avoids promising visa eligibility, approval odds, legal outcomes, or government timelines.
+- [x] **SAFE-01**: User-facing copy avoids promising visa eligibility, approval odds, legal outcomes, or government timelines.
 - [ ] **SAFE-02**: Existing business-demo fallback text is removed from visible immigration flows.
 - [ ] **SAFE-03**: Automated tests cover new track labels, advisor categories, risk categories, and basic simulation creation.
 - [ ] **SAFE-04**: Frontend lint/build pass for the repurposed app.
@@ -88,13 +88,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | Phase 1 | Pending |
-| SHELL-02 | Phase 1 | Pending |
-| SHELL-03 | Phase 1 | Pending |
-| SHELL-04 | Phase 1 | Pending |
-| INTAKE-01 | Phase 1 | Pending |
-| INTAKE-02 | Phase 1 | Pending |
-| INTAKE-03 | Phase 1 | Pending |
+| SHELL-01 | Phase 1 | Complete |
+| SHELL-02 | Phase 1 | Complete |
+| SHELL-03 | Phase 1 | Complete |
+| SHELL-04 | Phase 1 | Complete |
+| INTAKE-01 | Phase 1 | Complete |
+| INTAKE-02 | Phase 1 | Complete |
+| INTAKE-03 | Phase 1 | Complete |
 | SIM-01 | Phase 2 | Pending |
 | SIM-02 | Phase 2 | Pending |
 | SIM-03 | Phase 2 | Pending |
@@ -107,7 +107,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REPORT-03 | Phase 3 | Pending |
 | REPORT-04 | Phase 3 | Pending |
 | REPORT-05 | Phase 3 | Pending |
-| SAFE-01 | Phase 1 | Pending |
+| SAFE-01 | Phase 1 | Complete |
 | SAFE-02 | Phase 2 | Pending |
 | SAFE-03 | Phase 4 | Pending |
 | SAFE-04 | Phase 4 | Pending |
@@ -119,4 +119,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-05-09*
-*Last updated: 2026-05-09 after roadmap creation*
+*Last updated: 2026-05-09 after Phase 1 execution*

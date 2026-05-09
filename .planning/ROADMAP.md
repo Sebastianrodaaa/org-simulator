@@ -13,7 +13,7 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 
 | # | Phase | Goal | Requirements | UI hint |
 |---|-------|------|--------------|---------|
-| 1 | Product Shell and Intake | Turn the first screen into an immigration-focused two-track scenario tool | SHELL-01, SHELL-02, SHELL-03, SHELL-04, INTAKE-01, INTAKE-02, INTAKE-03, SAFE-01 | yes |
+| 1 | Product Shell and Intake | Turn the first screen into an immigration-focused two-track scenario tool | SHELL-01, SHELL-02, SHELL-03, SHELL-04, INTAKE-01, INTAKE-02, INTAKE-03, SAFE-01 | complete |
 | 2 | Advisor Simulation Conversion | Replace org departments/personas with immigration and systems-navigation advisor simulations | SIM-01, SIM-02, SIM-03, SIM-04, SAFE-02 | yes |
 | 3 | Risk Graph and Action Report | Convert conflicts into user-centered risks and produce actionable reports | RISK-01, RISK-02, RISK-03, REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05 | yes |
 | 4 | Demo Hardening and Verification | Make the combined demo reliable, tested, and ready to present | SAFE-03, SAFE-04 | yes |
@@ -23,6 +23,8 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 ## Phase Details
 
 ### Phase 1: Product Shell and Intake
+
+**Status:** Complete - 2026-05-09
 
 **Goal:** The user lands directly in a polished immigration strategy tool with two tracks, guided scenarios, freeform input, and privacy/safety framing.
 
@@ -59,6 +61,13 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 - Default track is Founder Immigration.
 - Use CivicBridge planning/rehearsal language and avoid legal-outcome promises.
 - Hide old department/business vocabulary from the primary Phase 1 flow.
+
+**Completed outputs:**
+
+- `/` redirects to `/simulate`, with `CivicBridge` shell metadata and Rehearse/Overview navigation.
+- `/simulate` now has Founder Immigration and First 1000 Days tracks, guided scenarios, six key fact fields, uncertainty chips, and the required safety note.
+- The right panel shows a track-sensitive Risk Map Preview before run and uses advisor/risk/action-report labels during run.
+- Frontend lint, TypeScript, build, and visible-copy checks pass for the repurposed simulator.
 
 ### Phase 2: Advisor Simulation Conversion
 
@@ -126,13 +135,13 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | Phase 1 | Pending |
-| SHELL-02 | Phase 1 | Pending |
-| SHELL-03 | Phase 1 | Pending |
-| SHELL-04 | Phase 1 | Pending |
-| INTAKE-01 | Phase 1 | Pending |
-| INTAKE-02 | Phase 1 | Pending |
-| INTAKE-03 | Phase 1 | Pending |
+| SHELL-01 | Phase 1 | Complete |
+| SHELL-02 | Phase 1 | Complete |
+| SHELL-03 | Phase 1 | Complete |
+| SHELL-04 | Phase 1 | Complete |
+| INTAKE-01 | Phase 1 | Complete |
+| INTAKE-02 | Phase 1 | Complete |
+| INTAKE-03 | Phase 1 | Complete |
 | SIM-01 | Phase 2 | Pending |
 | SIM-02 | Phase 2 | Pending |
 | SIM-03 | Phase 2 | Pending |
@@ -145,7 +154,7 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 | REPORT-03 | Phase 3 | Pending |
 | REPORT-04 | Phase 3 | Pending |
 | REPORT-05 | Phase 3 | Pending |
-| SAFE-01 | Phase 1 | Pending |
+| SAFE-01 | Phase 1 | Complete |
 | SAFE-02 | Phase 2 | Pending |
 | SAFE-03 | Phase 4 | Pending |
 | SAFE-04 | Phase 4 | Pending |
