@@ -21,6 +21,7 @@ See: `.planning/PROJECT.md` (updated 2026-05-09)
 - Research: `.planning/research/`
 - Requirements: `.planning/REQUIREMENTS.md`
 - Roadmap: `.planning/ROADMAP.md`
+- Phase 1 UI design contract: `.planning/phases/01-product-shell-and-intake/01-UI-SPEC.md`
 
 ## Decisions
 
@@ -32,8 +33,7 @@ See: `.planning/PROJECT.md` (updated 2026-05-09)
 
 ## Next Step
 
-Run `$gsd-discuss-phase 1` or `$gsd-ui-phase 1` before implementation. Phase 1 has user-facing UI changes, so a UI design contract is recommended.
+Run `$gsd-discuss-phase 1` for implementation context, or `$gsd-plan-phase 1` to plan directly using the approved UI-SPEC.
 
 ---
-*Last updated: 2026-05-09 after roadmap creation*
-
+*Last updated: 2026-05-09 after Phase 1 UI-SPEC approved*
