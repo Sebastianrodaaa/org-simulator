@@ -1,14 +1,14 @@
 """
-End-to-end integration test for the OrgSim simulation pipeline.
+End-to-end integration tests for the CivicBridge / OrgSim API and WebSocket streams.
 
 Requires all Docker services running:
   docker compose up -d
 
 Run:
-  pytest backend/tests/test_e2e.py -v -s
+  pytest Backend/tests/test_e2e.py -v -s
 
 Skip when services are unavailable (CI without Docker):
-  pytest backend/tests/test_e2e.py -v -m "not e2e"
+  pytest Backend/tests/test_e2e.py -v -m "not e2e"
 """
 from __future__ import annotations
 
@@ -30,8 +30,17 @@ import websockets
 BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 WS_BASE_URL = BASE_URL.replace("http://", "ws://").replace("https://", "wss://")
 
-DEMO_DECISION = "CFO cuts Q4 marketing budget 20%"
+DEMO_DECISION = (
+    "Founder O-1A rehearsal: publications strong; comparable offers thin; employer willing to sponsor."
+)
 DEMO_DEPARTMENTS = ["Sales", "Finance", "Engineering", "HR"]
+CIVICBRIDGE_DEMO_BODY = {
+    "decision": (
+        "First 1000 days: open bank account, ITIN, apartment lease, health plan — state CA, uncertain credit file."
+    ),
+    "track": "first1000",
+    "departments": [],
+}
 
 
 def _port_open(host: str, port: int, timeout: float = 1.0) -> bool:
@@ -52,7 +61,7 @@ def _api_reachable() -> bool:
 
 requires_api = pytest.mark.skipif(
     not _api_reachable(),
-    reason="OrgSim API not reachable at localhost:8000 — start with: uvicorn api.main:app --port 8000",
+    reason="API not reachable at localhost:8000 — start with: cd Backend && uvicorn api.main:app --port 8000",
 )
 
 requires_nats = pytest.mark.skipif(
@@ -88,15 +97,15 @@ def test_health_endpoint_returns_200() -> None:
 def test_post_simulate_returns_pending_run() -> None:
     r = httpx.post(
         f"{BASE_URL}/simulate",
-        json={"decision": DEMO_DECISION, "departments": DEMO_DEPARTMENTS},
+        json=CIVICBRIDGE_DEMO_BODY,
         timeout=10,
     )
     assert r.status_code == 202, f"Expected 202, got {r.status_code}: {r.text}"
     body = r.json()
     assert body["status"] == "pending"
     assert body["run_id"]
-    assert body["decision"] == DEMO_DECISION
-    assert set(body["departments"]) == set(DEMO_DEPARTMENTS)
+    assert body["decision"] == CIVICBRIDGE_DEMO_BODY["decision"]
+    assert body["departments"] == []
 
 
 @requires_api
@@ -104,7 +113,11 @@ def test_get_simulate_returns_run() -> None:
     # Create a run first
     create = httpx.post(
         f"{BASE_URL}/simulate",
-        json={"decision": DEMO_DECISION, "departments": ["Sales", "Finance"]},
+        json={
+            "decision": DEMO_DECISION,
+            "track": "founder",
+            "departments": [],
+        },
         timeout=10,
     )
     run_id = create.json()["run_id"]
@@ -144,10 +157,10 @@ def test_simulate_validates_invalid_department() -> None:
 
 @requires_api
 def test_stub_run_progresses_to_complete() -> None:
-    """Without Temporal, the background stub should reach 'complete' within 15s."""
+    """Without the Simulation service, the background stub should reach 'complete' within 15s."""
     create = httpx.post(
         f"{BASE_URL}/simulate",
-        json={"decision": DEMO_DECISION, "departments": ["Sales", "Finance"]},
+        json=CIVICBRIDGE_DEMO_BODY,
         timeout=10,
     )
     run_id = create.json()["run_id"]
@@ -158,6 +171,8 @@ def test_stub_run_progresses_to_complete() -> None:
         time.sleep(1)
         poll = httpx.get(f"{BASE_URL}/simulate/{run_id}", timeout=5)
         if poll.json()["status"] == "complete":
+            data = poll.json()
+            assert data.get("report") is not None, "GET should include report after stub completion"
             return
     pytest.fail(f"Run {run_id} did not reach 'complete' within 15 seconds")
 
@@ -175,7 +190,7 @@ def test_websocket_streams_agent_messages_and_completes() -> None:
     # Create a run to get a valid run_id
     create = httpx.post(
         f"{BASE_URL}/simulate",
-        json={"decision": DEMO_DECISION, "departments": DEMO_DEPARTMENTS},
+        json=CIVICBRIDGE_DEMO_BODY,
         timeout=10,
     )
     run_id = create.json()["run_id"]
@@ -217,12 +232,12 @@ def test_websocket_streams_agent_messages_and_completes() -> None:
 
 @requires_api
 def test_demo_scenario_completes_within_90s() -> None:
-    """Primary demo acceptance test: the CFO budget cut scenario."""
+    """Primary demo acceptance: CivicBridge track + WS stream completes in time."""
     start = time.time()
 
     create = httpx.post(
         f"{BASE_URL}/simulate",
-        json={"decision": "CFO cuts Q4 marketing budget 20%", "departments": ["Sales", "Finance", "Engineering", "HR"]},
+        json=CIVICBRIDGE_DEMO_BODY,
         timeout=10,
     )
     assert create.status_code == 202

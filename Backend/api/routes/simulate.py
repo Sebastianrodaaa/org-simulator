@@ -8,16 +8,75 @@ import asyncio
 import logging
 import uuid
 from datetime import datetime, timezone
-from typing import Literal, Optional, Self
+from typing import Any, Literal, Optional, Self
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from api import run_store
+from api.simulation_snapshot import attach_snapshot_to_run
 from api.services.live_simulation import live_simulation_enabled, run_live_streaming_pipeline
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+def _append_stub_rehearsal_events(run_id: str) -> None:
+    """
+    Populate event_history for backend-only runs so attach_snapshot_to_run can build
+    messages, risk-shaped conflicts, and the CivicBridge report on GET /simulate/{id}.
+    """
+    run = run_store.runs.get(run_id)
+    if not run:
+        return
+    ts = datetime.now(tz=timezone.utc).isoformat()
+    hist = run_store.event_history.setdefault(run_id, [])
+    agents = [
+        {
+            "name": "Evidence Coach",
+            "role": "Evidence Coach",
+            "dept": "Founder Immigration — Evidence",
+        },
+        {
+            "name": "Immigration Counsel",
+            "role": "Immigration Attorney",
+            "dept": "Founder Immigration — Counsel",
+        },
+    ]
+    hist.extend([
+        {
+            "type": "agent_message",
+            "run_id": run_id,
+            "timestamp": ts,
+            "round": 1,
+            "agent": agents[0],
+            "message": (
+                "Rehearsal: map evidence tiers you can deliver now vs. items that still need "
+                "authenticated copies — avoid implying outcomes in draft timelines."
+            ),
+        },
+        {
+            "type": "agent_message",
+            "run_id": run_id,
+            "timestamp": ts,
+            "round": 1,
+            "agent": agents[1],
+            "message": (
+                "Treat adjudication timing as uncertain until you verify against current agency "
+                "guidance and your specific filing category."
+            ),
+        },
+        {
+            "type": "conflict",
+            "run_id": run_id,
+            "timestamp": ts,
+            "round": 2,
+            "agent": agents[0],
+            "message": (
+                "Risk signal: evidence completeness vs. target filing window (strength 8/10)."
+            ),
+        },
+    ])
 
 VALID_DEPARTMENTS = {"Sales", "Finance", "Operations", "HR", "Engineering", "Marketing"}
 
@@ -62,6 +121,9 @@ class SimulationRun(BaseModel):
     created_at: str
     recommendation: Optional[str] = None
     engine: Literal["cascade", "swarm"] = "cascade"
+    messages: Optional[list[dict[str, Any]]] = None
+    conflicts: Optional[list[dict[str, Any]]] = None
+    report: Optional[dict[str, Any]] = None
 
 
 async def _stub_run(run_id: str) -> None:
@@ -76,6 +138,8 @@ async def _stub_run(run_id: str) -> None:
             "Pause for a 30-day verification window: confirm key facts with primary sources "
             "and a qualified professional before locking next commitments."
         )
+        _append_stub_rehearsal_events(run_id)
+        attach_snapshot_to_run(run_id)
 
 
 async def _run_streaming_background(run_id: str, req: SimulateRequest) -> None:
@@ -112,11 +176,16 @@ async def _run_streaming_background(run_id: str, req: SimulateRequest) -> None:
             max_active_per_round=req.max_active_per_round,
             track=req.track,
         )
+        attach_snapshot_to_run(run_id)
         run_store.runs[run_id]["status"] = "complete"
         if rec:
             run_store.runs[run_id]["recommendation"] = rec
     except Exception as exc:
         logger.exception("Streaming simulation failed for run %s", run_id)
+        try:
+            attach_snapshot_to_run(run_id)
+        except Exception:
+            logger.exception("attach_snapshot_to_run failed after streaming error for %s", run_id)
         run_store.runs[run_id]["status"] = "failed"
         run_store.runs[run_id]["recommendation"] = f"Simulation error: {exc}"
         # Push an error event so the WebSocket doesn't hang

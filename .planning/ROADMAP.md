@@ -17,8 +17,8 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 | 2 | Advisor Simulation Conversion | Replace org departments/personas with immigration and systems-navigation advisor simulations | SIM-01, SIM-02, SIM-03, SIM-04, SAFE-02 | complete |
 | 3 | Risk Graph and Action Report | Convert conflicts into user-centered risks and produce actionable reports | RISK-01, RISK-02, RISK-03, REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05 | complete |
 | 4 | Demo Hardening and Verification | Make the combined demo reliable, tested, and ready to present | SAFE-03, SAFE-04 | complete |
-| 5 | Snapshot and GET Report Wiring | Close stub/streaming/WS gaps so `GET /simulate/{id}` returns report payload on all completion paths | REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05, RISK-01, RISK-02, SIM-03, SIM-04 | planned |
-| 6 | CivicBridge Tests and Swarm Labels | Align automated tests with CivicBridge narrative and swarm graph labels with advisor lanes | RISK-03, SAFE-02, SAFE-03 | planned |
+| 5 | Snapshot and GET Report Wiring | Close stub/streaming/WS gaps so `GET /simulate/{id}` returns report payload on all completion paths | REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05, RISK-01, RISK-02, SIM-03, SIM-04 | complete |
+| 6 | CivicBridge Tests and Swarm Labels | Align automated tests with CivicBridge narrative and swarm graph labels with advisor lanes | RISK-03, SAFE-02, SAFE-03 | complete |
 
 **Coverage:** 23 / 23 v1 requirements mapped.
 
@@ -153,7 +153,7 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 
 ### Phase 5: Snapshot and GET Report Wiring
 
-**Status:** Planned — gap closure (`v1.0-MILESTONE-AUDIT.md`)
+**Status:** Complete — 2026-05-09
 
 **Goal:** Stub runs, streaming failure paths, and WS/mock fallbacks all produce a GET-shaped snapshot (`messages`, `conflicts`, `report`) so the report route works for backend-only and partial-stream demos, not only the two-service live path.
 
@@ -171,9 +171,13 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 
 - Primary touchpoints: `Backend/api/routes/simulate.py`, `Backend/api/services/live_simulation.py`, `Backend/api/ws/simulation.py`, `Backend/api/simulation_snapshot.py`.
 
+**Completed outputs:**
+
+- Stub completion calls `_append_stub_rehearsal_events` + `attach_snapshot_to_run`; streaming failures attach partial snapshot before marking failed; mock WS appends events to `event_history` and calls `attach_snapshot_to_run`; honest no-stream calls `attach_snapshot_to_run` for empty-template report on GET.
+
 ### Phase 6: CivicBridge Tests and Swarm Labels
 
-**Status:** Planned — gap closure (`v1.0-MILESTONE-AUDIT.md`)
+**Status:** Complete — 2026-05-09
 
 **Goal:** Automated tests and swarm visualization align with CivicBridge advisor lanes and narratives; remaining business-demo references in tests are removed or updated.
 
@@ -191,6 +195,10 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 
 - Primary touchpoints: `Backend/tests/test_e2e.py`, `Simulation/tests/`, `Frontend` swarm/graph components (e.g. `SwarmInteractionGraph` / `ConflictGraph` as applicable).
 
+**Completed outputs:**
+
+- `test_e2e.py` CivicBridge track/decision fixtures + report assertion on stub complete; `SwarmInteractionGraph` lane colors + `fillForDept` fallback; `test_stub_snapshot.py` regression.
+
 ## Requirement Coverage
 
 | Requirement | Phase | Status |
@@ -204,20 +212,20 @@ Repurpose OrgSim into a combined immigration and first-1000-days strategy simula
 | INTAKE-03 | Phase 1 | Complete |
 | SIM-01 | Phase 2 | Complete |
 | SIM-02 | Phase 2 | Complete |
-| SIM-03 | Phase 5 | Pending |
-| SIM-04 | Phase 5 | Pending |
-| RISK-01 | Phase 5 | Pending |
-| RISK-02 | Phase 5 | Pending |
-| RISK-03 | Phase 6 | Pending |
-| REPORT-01 | Phase 5 | Pending |
-| REPORT-02 | Phase 5 | Pending |
-| REPORT-03 | Phase 5 | Pending |
-| REPORT-04 | Phase 5 | Pending |
-| REPORT-05 | Phase 5 | Pending |
+| SIM-03 | Phase 5 | Complete |
+| SIM-04 | Phase 5 | Complete |
+| RISK-01 | Phase 5 | Complete |
+| RISK-02 | Phase 5 | Complete |
+| RISK-03 | Phase 6 | Complete |
+| REPORT-01 | Phase 5 | Complete |
+| REPORT-02 | Phase 5 | Complete |
+| REPORT-03 | Phase 5 | Complete |
+| REPORT-04 | Phase 5 | Complete |
+| REPORT-05 | Phase 5 | Complete |
 | SAFE-01 | Phase 1 | Complete |
-| SAFE-02 | Phase 6 | Pending |
-| SAFE-03 | Phase 6 | Pending |
+| SAFE-02 | Phase 6 | Complete |
+| SAFE-03 | Phase 6 | Complete |
 | SAFE-04 | Phase 4 | Complete |
 
 ---
-*Roadmap created: 2026-05-09 · Phases 2–4 marked complete 2026-05-09 · Gap closure phases 5–6 added 2026-05-09 (milestone audit)*
+*Roadmap created: 2026-05-09 · Gap closure phases 5–6 executed 2026-05-09 (autonomous)*

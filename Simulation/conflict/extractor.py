@@ -139,6 +139,66 @@ def _is_action_violation(msg: dict[str, Any], permitted_actions: list[str]) -> b
 # ---------------------------------------------------------------------------
 
 
+def _risk_category_from_text(description: str, ctype: str) -> str:
+    blob = description.lower()
+    pairs = [
+        ("visa", "eligibility"),
+        ("status", "eligibility"),
+        ("uscis", "eligibility"),
+        ("evidence", "evidence"),
+        ("rfe", "evidence"),
+        ("deadline", "timing"),
+        ("timeline", "timing"),
+        ("priority date", "timing"),
+        ("cost", "cost"),
+        ("fee", "cost"),
+        ("budget", "cost"),
+        ("tax", "tax"),
+        ("itin", "tax"),
+        ("bank", "banking_credit"),
+        ("credit", "banking_credit"),
+        ("health", "healthcare"),
+        ("coverage", "healthcare"),
+        ("housing", "housing"),
+        ("lease", "housing"),
+        ("deposit", "housing"),
+        ("ead", "work_authorization"),
+        ("work authorization", "work_authorization"),
+        ("compliance", "compliance"),
+        ("language", "language_access"),
+        ("professional", "professional_review"),
+        ("attorney", "professional_review"),
+    ]
+    for needle, cat in pairs:
+        if needle in blob:
+            return cat
+    return {
+        "budget": "cost",
+        "timeline": "timing",
+        "resource": "compliance",
+        "priority": "professional_review",
+    }.get(ctype, "professional_review")
+
+
+def _with_risk_metadata(conflict: dict[str, Any]) -> dict[str, Any]:
+    desc = str(conflict.get("description", ""))
+    ctype = str(conflict.get("conflict_type", "priority"))
+    cat = _risk_category_from_text(
+        desc + " " + str(conflict.get("agent_a_message", "")),
+        ctype,
+    )
+    dept_a = str(conflict.get("dept_a", ""))
+    dept_b = str(conflict.get("dept_b", ""))
+    out = {
+        **conflict,
+        "risk_category": cat,
+        "risk_summary": (
+            f"Risk ({cat.replace('_', ' ')}): tension between {dept_a} and {dept_b} — {desc}"
+        ),
+    }
+    return out
+
+
 def _make_conflict_id(dept_a: str, dept_b: str, round_num: int, msg_a_id: int, msg_b_id: int) -> str:
     key = f"{dept_a}:{dept_b}:{round_num}:{msg_a_id}:{msg_b_id}"
     return "cfl_" + hashlib.sha1(key.encode()).hexdigest()[:12]
@@ -180,8 +240,8 @@ def _fallback_classify(
     dept_a = msg_a.get("department", "Unknown")
     dept_b = msg_b.get("department", "Unknown")
     description = (
-        f"{dept_a} and {dept_b} have opposing positions regarding {ctype} allocation "
-        f"in round {msg_a.get('round', 0)}."
+        f"{dept_a} and {dept_b} surface competing priorities around {ctype} "
+        f"during round {msg_a.get('round', 0)} — worth verifying before locking dates."
     )
     return {"conflict_type": ctype, "severity": severity, "description": description}
 
@@ -300,7 +360,7 @@ def extract_conflicts(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "agent_a_message": content_a,
                 "agent_b_message": content_b,
             }
-            conflicts.append(conflict)
+            conflicts.append(_with_risk_metadata(conflict))
             logger.info(
                 "Conflict detected: %s ↔ %s [%s/%s] round %d",
                 dept_a, dept_b, ctype, severity, round_num,

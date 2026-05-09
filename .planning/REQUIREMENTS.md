@@ -22,31 +22,31 @@ Requirements for the hackathon release. Each maps to roadmap phases.
 
 ### Advisor Simulation
 
-- [ ] **SIM-01**: Founder Immigration simulations use immigration/founder advisor personas instead of business department personas.
-- [ ] **SIM-02**: Learning to be American simulations use banking, credit, healthcare, housing, tax, rights, and local-systems advisor personas.
-- [ ] **SIM-03**: Simulation events stream live to the frontend using the existing WebSocket flow.
-- [ ] **SIM-04**: Simulation can complete in demo mode without requiring cloud API keys or all optional infrastructure services.
+- [x] **SIM-01**: Founder Immigration simulations use immigration/founder advisor personas instead of business department personas.
+- [x] **SIM-02**: Learning to be American simulations use banking, credit, healthcare, housing, tax, rights, and local-systems advisor personas.
+- [x] **SIM-03**: Simulation events stream live to the frontend using the existing WebSocket flow.
+- [x] **SIM-04**: Simulation can complete in demo mode without requiring cloud API keys or all optional infrastructure services.
 
 ### Risk Extraction
 
-- [ ] **RISK-01**: The app presents extracted results as risks, blockers, evidence gaps, tradeoffs, and timeline collisions instead of business conflicts.
-- [ ] **RISK-02**: Risk categories include eligibility, evidence, timing, cost, compliance, work authorization, healthcare, housing, banking/credit, tax, language/access, and professional review needed.
-- [ ] **RISK-03**: Risk graph/feed labels use immigration and systems-navigation language throughout.
+- [x] **RISK-01**: The app presents extracted results as risks, blockers, evidence gaps, tradeoffs, and timeline collisions instead of business conflicts.
+- [x] **RISK-02**: Risk categories include eligibility, evidence, timing, cost, compliance, work authorization, healthcare, housing, banking/credit, tax, language/access, and professional review needed.
+- [x] **RISK-03**: Risk graph/feed labels use immigration and systems-navigation language throughout.
 
 ### Action Report
 
-- [ ] **REPORT-01**: User can view a report after simulation completion.
-- [ ] **REPORT-02**: Report includes next steps, evidence/documents to gather, deadlines to verify, and questions for professionals.
-- [ ] **REPORT-03**: Report distinguishes known facts, unknown facts, and facts that must be verified.
-- [ ] **REPORT-04**: Report includes clear "not legal advice" and professional-review caveats.
-- [ ] **REPORT-05**: Report can display official-source links or source references for relevant domains.
+- [x] **REPORT-01**: User can view a report after simulation completion.
+- [x] **REPORT-02**: Report includes next steps, evidence/documents to gather, deadlines to verify, and questions for professionals.
+- [x] **REPORT-03**: Report distinguishes known facts, unknown facts, and facts that must be verified.
+- [x] **REPORT-04**: Report includes clear "not legal advice" and professional-review caveats.
+- [x] **REPORT-05**: Report can display official-source links or source references for relevant domains.
 
 ### Quality And Safety
 
 - [x] **SAFE-01**: User-facing copy avoids promising visa eligibility, approval odds, legal outcomes, or government timelines.
-- [ ] **SAFE-02**: Existing business-demo fallback text is removed from visible immigration flows.
-- [ ] **SAFE-03**: Automated tests cover new track labels, advisor categories, risk categories, and basic simulation creation.
-- [ ] **SAFE-04**: Frontend lint/build pass for the repurposed app.
+- [x] **SAFE-02**: Existing business-demo fallback text is removed from visible immigration flows.
+- [x] **SAFE-03**: Automated tests cover new track labels, advisor categories, risk categories, and basic simulation creation.
+- [x] **SAFE-04**: Frontend lint/build pass for the repurposed app.
 
 ## v2 Requirements
 
@@ -97,27 +97,26 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INTAKE-03 | Phase 1 | Complete |
 | SIM-01 | Phase 2 | Complete |
 | SIM-02 | Phase 2 | Complete |
-| SIM-03 | Phase 5 | Pending |
-| SIM-04 | Phase 5 | Pending |
-| RISK-01 | Phase 5 | Pending |
-| RISK-02 | Phase 5 | Pending |
-| RISK-03 | Phase 6 | Pending |
-| REPORT-01 | Phase 5 | Pending |
-| REPORT-02 | Phase 5 | Pending |
-| REPORT-03 | Phase 5 | Pending |
-| REPORT-04 | Phase 5 | Pending |
-| REPORT-05 | Phase 5 | Pending |
+| SIM-03 | Phase 5 | Complete |
+| SIM-04 | Phase 5 | Complete |
+| RISK-01 | Phase 5 | Complete |
+| RISK-02 | Phase 5 | Complete |
+| RISK-03 | Phase 6 | Complete |
+| REPORT-01 | Phase 5 | Complete |
+| REPORT-02 | Phase 5 | Complete |
+| REPORT-03 | Phase 5 | Complete |
+| REPORT-04 | Phase 5 | Complete |
+| REPORT-05 | Phase 5 | Complete |
 | SAFE-01 | Phase 1 | Complete |
-| SAFE-02 | Phase 6 | Pending |
-| SAFE-03 | Phase 6 | Pending |
+| SAFE-02 | Phase 6 | Complete |
+| SAFE-03 | Phase 6 | Complete |
 | SAFE-04 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 23 total
 - Mapped to phases: 23
 - Unmapped: 0
-- Traceability Pending (gap closure): 12
 
 ---
 *Requirements defined: 2026-05-09*
-*Last updated: 2026-05-09 — gap closure phases 5–6 from v1.0 milestone audit*
+*Last updated: 2026-05-09 — phases 5–6 gap closure (autonomous)*

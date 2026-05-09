@@ -19,35 +19,37 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api import run_store
 from api.nats_client import get_jetstream, get_subject
+from api.simulation_snapshot import attach_snapshot_to_run
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # ── Mock fallback data ────────────────────────────────────────────────────────
 
+# CivicBridge-shaped mock: advisor lanes + rehearsal language (no legal outcomes).
 _MOCK_AGENTS = [
-    {"name": "CFO",         "role": "Chief Financial Officer",  "dept": "Finance"},
-    {"name": "VP Sales",    "role": "VP of Sales",              "dept": "Sales"},
-    {"name": "Ops Lead",    "role": "Operations Lead",          "dept": "Operations"},
-    {"name": "HR Director", "role": "HR Director",              "dept": "HR"},
+    {"name": "Evidence Coach", "role": "Evidence Coach", "dept": "Founder Immigration — Evidence"},
+    {"name": "Immigration Counsel", "role": "Immigration Attorney", "dept": "Founder Immigration — Counsel"},
+    {"name": "Tax Navigator", "role": "Tax Navigator", "dept": "Tax & payroll posture"},
+    {"name": "Founder Mentor", "role": "Founder Mentor", "dept": "Founder readiness"},
 ]
 
 _MOCK_EVENTS = [
-    ("agent_message", "CFO",         "Reviewing the financial impact of this decision on Q4 targets."),
-    ("agent_message", "VP Sales",    "Pipeline coverage drops if marketing spend is cut — deals are at risk."),
-    ("agent_message", "Ops Lead",    "Ops capacity is at 94%; any headcount freeze compounds the problem."),
-    ("agent_message", "HR Director", "Engagement scores may decline if budget signals instability."),
-    ("agent_message", "CFO",         "The 20% cut translates to a $56k reduction in campaign budget."),
-    ("agent_message", "VP Sales",    "Three enterprise deals close in Q4 — marketing support is critical."),
-    ("agent_message", "Ops Lead",    "Infra costs are fixed; the cut must come from headcount or campaigns."),
-    ("agent_message", "HR Director", "Top performer flight risk is already elevated in Sales."),
-    ("conflict",      "VP Sales",    "Conflict: Sales pipeline depends on Marketing spend (strength 8/10)."),
-    ("conflict",      "Ops Lead",    "Conflict: Engineering capacity limits Sales feature delivery (strength 9/10)."),
-    ("agent_message", "CFO",         "Finance confirms runway stays at 18 months — this cut is discretionary."),
-    ("agent_message", "VP Sales",    "Estimated 12% velocity drop without campaign spend. $340k pipeline at risk."),
-    ("agent_message", "HR Director", "HR recommends a 90-day freeze review rather than immediate cut."),
-    ("agent_message", "Ops Lead",    "We should model the revenue delta before committing to this reduction."),
-    ("agent_message", "CFO",         "Consensus forming: defer to Q1 and run a partial reduction pilot instead."),
+    ("agent_message", "Evidence Coach", "Indexing awards and comparable plans — one primary evidence tier still thin."),
+    ("agent_message", "Immigration Counsel", "Framing is coherent; we should avoid outcome language in client-facing notes."),
+    ("agent_message", "Tax Navigator", "Payroll start date vs. EAD effective date needs a single source of truth."),
+    ("agent_message", "Founder Mentor", "Runway tightens if counsel review slips past the filing window."),
+    ("agent_message", "Evidence Coach", "Expert letters are strong; publication timeline is the remaining gap."),
+    ("agent_message", "Immigration Counsel", "USCIS backlog assumptions belong in timing scenarios, not guarantees."),
+    ("agent_message", "Tax Navigator", "State residency flags if lease starts before payroll — worth rehearsing."),
+    ("agent_message", "Founder Mentor", "Ops load spikes around relocation — sequence healthcare enrollment early."),
+    ("conflict", "Evidence Coach", "Risk signal: filing deadline pressure vs. evidence completeness (strength 8/10)."),
+    ("conflict", "Founder Mentor", "Risk signal: runway cushion vs. counsel review bandwidth (strength 9/10)."),
+    ("agent_message", "Immigration Counsel", "Recommend parallel doc sprint rather than sequential holds."),
+    ("agent_message", "Tax Navigator", "Withholding elections should wait until first verified paystub."),
+    ("agent_message", "Founder Mentor", "Pilot a two-week buffer before hard commitments to landlords."),
+    ("agent_message", "Evidence Coach", "Comparable set expansion is higher leverage than more narrative."),
+    ("agent_message", "Immigration Counsel", "Consensus: rehearse two lanes — evidence sprint + payroll timing — before locking dates."),
 ]
 
 
@@ -87,10 +89,15 @@ async def _honest_no_stream(websocket: WebSocket, run_id: str) -> None:
             ),
         },
     })
+    try:
+        attach_snapshot_to_run(run_id)
+    except Exception:
+        logger.exception("attach_snapshot_to_run failed after honest no-stream for %s", run_id)
 
 
 async def _mock_stream(websocket: WebSocket, run_id: str) -> None:
     """Send mock events when no live simulation is available."""
+    hist = run_store.event_history.setdefault(run_id, [])
     for i, (event_type, agent_name, message) in enumerate(_MOCK_EVENTS):
         agent = next((a for a in _MOCK_AGENTS if a["name"] == agent_name), _MOCK_AGENTS[0])
         event: dict[str, Any] = {
@@ -100,7 +107,9 @@ async def _mock_stream(websocket: WebSocket, run_id: str) -> None:
             "agent": agent,
             "message": message,
             "sequence": i + 1,
+            "round": (i // 4) + 1,
         }
+        hist.append(dict(event))
         await websocket.send_json(event)
         await asyncio.sleep(0.5)
 
@@ -111,9 +120,13 @@ async def _mock_stream(websocket: WebSocket, run_id: str) -> None:
         "summary": {
             "total_messages": len(_MOCK_EVENTS),
             "conflicts_detected": 2,
-            "recommendation": "Defer Q4 cut; run partial pilot in Q1 with 30-day review gate.",
+            "recommendation": "Rehearse evidence sprint + payroll timing with explicit dates; schedule professional review checkpoints.",
         },
     })
+    try:
+        attach_snapshot_to_run(run_id)
+    except Exception:
+        logger.exception("attach_snapshot_to_run failed after mock stream for %s", run_id)
     logger.info("Mock stream complete for run %s", run_id)
 
 
