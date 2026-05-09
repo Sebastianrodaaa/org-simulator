@@ -4,6 +4,7 @@ OrgSim FastAPI application entry point.
 from __future__ import annotations
 
 import logging
+import asyncio
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -28,12 +29,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Startup — connect to infrastructure (graceful on failure)
     logger.info("OrgSim API starting up...")
     try:
-        await nats_client.connect()
+        await asyncio.wait_for(nats_client.connect(), timeout=2)
     except Exception as exc:
         logger.warning("NATS connect failed (mock mode active): %s", exc)
 
     try:
-        await temporal_client.connect()
+        await asyncio.wait_for(temporal_client.connect(), timeout=2)
     except Exception as exc:
         logger.warning("Temporal connect failed (stub mode active): %s", exc)
 
@@ -49,7 +50,7 @@ app = FastAPI(title="OrgSim API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

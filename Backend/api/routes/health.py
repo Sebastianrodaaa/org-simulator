@@ -31,7 +31,11 @@ def _check_typedb() -> bool:
 def _check_neo4j() -> bool:
     try:
         from neo4j import GraphDatabase
-        driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+        driver = GraphDatabase.driver(
+            NEO4J_URI,
+            auth=(NEO4J_USER, NEO4J_PASSWORD),
+            connection_timeout=2,
+        )
         driver.verify_connectivity()
         driver.close()
         return True
