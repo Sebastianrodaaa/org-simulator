@@ -18,8 +18,6 @@ import type {
 } from '@/lib/types'
 import { eventsToConflicts, eventsToMessages } from '@/lib/wireSimulationEvents'
 
-const COMPATIBILITY_DEPTS = ['Sales', 'Finance', 'Operations', 'HR'] as const
-
 const EMPTY_KEY_FACTS: KeyFacts = {
   currentStatus: '',
   goal: '',
@@ -256,11 +254,12 @@ function SimulateInner() {
     setLoading(true)
     setError(null)
     try {
-      const run = await startSimulation(buildScenarioText(), [...COMPATIBILITY_DEPTS], {
+      const run = await startSimulation(buildScenarioText(), [], {
         engine,
         rounds: engine === 'swarm' ? 4 : 15,
         swarmSize: engine === 'swarm' ? swarmSize : undefined,
         maxActivePerRound: engine === 'swarm' ? maxActivePerRound : undefined,
+        track,
       })
       setRunId(run.run_id)
       localStorage.setItem('civicbridge_last_run_id', run.run_id)
