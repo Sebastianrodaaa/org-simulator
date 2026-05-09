@@ -22,6 +22,7 @@ See: `.planning/PROJECT.md` (updated 2026-05-09)
 - Requirements: `.planning/REQUIREMENTS.md`
 - Roadmap: `.planning/ROADMAP.md`
 - Phase 1 UI design contract: `.planning/phases/01-product-shell-and-intake/01-UI-SPEC.md`
+- Phase 1 context: `.planning/phases/01-product-shell-and-intake/01-CONTEXT.md`
 
 ## Decisions
 
@@ -33,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-05-09)
 
 ## Next Step
 
-Run `$gsd-discuss-phase 1` for implementation context, or `$gsd-plan-phase 1` to plan directly using the approved UI-SPEC.
+Run `$gsd-plan-phase 1` to create the implementation plan using the approved UI-SPEC and captured context.
 
 ---
-*Last updated: 2026-05-09 after Phase 1 UI-SPEC approved*
+*Last updated: 2026-05-09 after Phase 1 context gathered*
