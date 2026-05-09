@@ -70,6 +70,7 @@ async def run_live_streaming_pipeline(
     rounds: int = 15,
     swarm_size: int | None = None,
     max_active_per_round: int | None = None,
+    track: str | None = None,
 ) -> str | None:
     """
     1. POST /generate-personas  → get persona list
@@ -94,9 +95,12 @@ async def run_live_streaming_pipeline(
     async with httpx.AsyncClient(timeout=timeout) as client:
         # ── 1. Generate personas ────────────────────────────────────────────
         logger.info("[%s] Calling generate-personas…", run_id)
+        gp_body: dict[str, Any] = {"decision": decision, "departments": departments}
+        if track is not None:
+            gp_body["track"] = track
         gp = await client.post(
             f"{base}/generate-personas",
-            json={"decision": decision, "departments": departments},
+            json=gp_body,
         )
         gp.raise_for_status()
         personas: list[dict[str, Any]] = gp.json()["personas"]

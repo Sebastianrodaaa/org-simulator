@@ -32,6 +32,10 @@ def _defaults() -> dict[str, Any]:
                 "HR": "hr_director",
                 "Marketing": "vp_sales",
             },
+            "advisor_tracks": {
+                "founder": [],
+                "first1000": [],
+            },
         },
     }
 
@@ -72,3 +76,14 @@ def department_templates() -> dict[str, str]:
     sec = simulation_section()
     raw = sec.get("department_templates") or {}
     return {str(k): str(v) for k, v in raw.items()}
+
+
+def advisor_track_templates(track: str) -> list[str]:
+    sec = simulation_section()
+    raw = sec.get("advisor_tracks") or {}
+    if not isinstance(raw, dict):
+        return []
+    ids = raw.get(track)
+    if not isinstance(ids, list):
+        return []
+    return [str(x) for x in ids if x]
