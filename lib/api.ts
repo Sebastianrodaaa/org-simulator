@@ -10,6 +10,25 @@ export type { SimulationRun, SimulationEvent, ConflictDict, MessageDict, ReportD
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 
+function networkErrorHint(context: string): Error {
+  return new Error(
+    `${context} — cannot reach API at ${BASE}. ` +
+      'Start it from the repo: `cd Backend && uvicorn api.main:app --reload --port 8000`. ' +
+      'If the API runs elsewhere, set `NEXT_PUBLIC_API_URL` in Frontend `.env.local` and restart `npm run dev`.'
+  )
+}
+
+async function apiFetch(input: string, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(input, init)
+  } catch (e) {
+    if (e instanceof TypeError && /fetch|Load failed|NetworkError/i.test(e.message)) {
+      throw networkErrorHint('Network error')
+    }
+    throw e
+  }
+}
+
 /** POST /simulate response (subset of fields used by the UI). */
 export interface SimulationCreateResponse {
   run_id: string
@@ -24,6 +43,9 @@ export interface SimulationCreateResponse {
   conflicts?: ConflictDict[]
   report?: ReportDict | null
 }
+
+/** @deprecated use conflicts — same shape; risks surfaced between advisor lanes */
+export type RiskSignalDict = ConflictDict
 
 export type SimulationEngine = 'cascade' | 'swarm'
 
@@ -55,7 +77,7 @@ export async function startSimulation(
     body.max_active_per_round = 8
   }
 
-  const res = await fetch(`${BASE}/simulate`, {
+  const res = await apiFetch(`${BASE}/simulate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -65,13 +87,13 @@ export async function startSimulation(
 }
 
 export async function getSimulation(runId: string): Promise<SimulationCreateResponse> {
-  const res = await fetch(`${BASE}/simulate/${runId}`)
+  const res = await apiFetch(`${BASE}/simulate/${runId}`)
   if (!res.ok) throw new Error(await res.text())
   return res.json() as Promise<SimulationCreateResponse>
 }
 
 export async function getHealth(): Promise<Record<string, unknown>> {
-  const res = await fetch(`${BASE}/health`)
+  const res = await apiFetch(`${BASE}/health`)
   if (!res.ok) throw new Error(await res.text())
   return res.json()
 }
