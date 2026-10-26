@@ -32,16 +32,8 @@ def _append_stub_rehearsal_events(run_id: str) -> None:
     ts = datetime.now(tz=timezone.utc).isoformat()
     hist = run_store.event_history.setdefault(run_id, [])
     agents = [
-        {
-            "name": "Evidence Coach",
-            "role": "Evidence Coach",
-            "dept": "Founder Immigration — Evidence",
-        },
-        {
-            "name": "Immigration Counsel",
-            "role": "Immigration Attorney",
-            "dept": "Founder Immigration — Counsel",
-        },
+        {"name": "CFO", "role": "CFO", "dept": "Finance"},
+        {"name": "VP Sales", "role": "VP of Sales", "dept": "Sales"},
     ]
     hist.extend([
         {
@@ -51,8 +43,8 @@ def _append_stub_rehearsal_events(run_id: str) -> None:
             "round": 1,
             "agent": agents[0],
             "message": (
-                "Rehearsal: map evidence tiers you can deliver now vs. items that still need "
-                "authenticated copies — avoid implying outcomes in draft timelines."
+                "The marketing line is discretionary. A 20% Q4 cut protects runway "
+                "without touching headcount."
             ),
         },
         {
@@ -62,8 +54,8 @@ def _append_stub_rehearsal_events(run_id: str) -> None:
             "round": 1,
             "agent": agents[1],
             "message": (
-                "Treat adjudication timing as uncertain until you verify against current agency "
-                "guidance and your specific filing category."
+                "Late-stage deals depend on the campaigns this budget funds. "
+                "Coverage falls under 3x if the cut lands on those programs."
             ),
         },
         {
@@ -71,9 +63,9 @@ def _append_stub_rehearsal_events(run_id: str) -> None:
             "run_id": run_id,
             "timestamp": ts,
             "round": 2,
-            "agent": agents[0],
+            "agent": agents[1],
             "message": (
-                "Risk signal: evidence completeness vs. target filing window (strength 8/10)."
+                "Conflict: Q4 marketing cut vs. pipeline coverage (strength 8/10)."
             ),
         },
     ])
@@ -135,8 +127,8 @@ async def _stub_run(run_id: str) -> None:
     if run_id in run_store.runs:
         run_store.runs[run_id]["status"] = "complete"
         run_store.runs[run_id]["recommendation"] = (
-            "Pause for a 30-day verification window: confirm key facts with primary sources "
-            "and a qualified professional before locking next commitments."
+            "Hold the cut on uncommitted brand spend. Re-forecast pipeline coverage "
+            "and quota-team load before the number is locked."
         )
         _append_stub_rehearsal_events(run_id)
         attach_snapshot_to_run(run_id)

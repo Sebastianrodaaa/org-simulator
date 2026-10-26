@@ -2,7 +2,7 @@
 
 ## Project
 
-This repository is being repurposed from OrgSim into CivicBridge Simulator, a combined immigration and first-1000-days strategy simulator for the hackathon.
+This repository is OrgSim, the organizational decision rehearsal that won the IBM agent orchestration hackathon. Agents represent internal stakeholders (CFO, VP Sales, Operations, HR) and forecast cross-department conflicts before a C-suite decision is made. The CivicBridge immigration retarget is retired.
 
 Read these planning files before major changes:
 
@@ -15,15 +15,14 @@ Read these planning files before major changes:
 
 ## Current Priority
 
-Phase 1 is Product Shell and Intake. Preserve the existing simulation architecture while converting the visible product experience to an immigration-focused two-track tool.
+Keep the visible product on the OrgSim department rehearsal. The primary demo is the CFO cutting Q4 marketing by 20% across Sales, Finance, Operations, and HR.
 
 ## Engineering Rules
 
 - Work with the existing FastAPI + Simulation + Next.js architecture.
 - Do not remove user changes or unrelated dirty work.
 - Keep demo reliability: fallback paths should still work without cloud keys.
-- Avoid legal-outcome promises. Use planning, risk, uncertainty, and professional-review language.
-- Prefer official sources for immigration, tax, healthcare, housing, banking, and government-system facts.
+- Frame output as a conflict forecast for a decision that has not been made yet.
 - Keep v1 focused on a coherent end-to-end demo.
 
 ## Useful Commands

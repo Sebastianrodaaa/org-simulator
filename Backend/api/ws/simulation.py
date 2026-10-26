@@ -26,30 +26,30 @@ router = APIRouter()
 
 # ── Mock fallback data ────────────────────────────────────────────────────────
 
-# CivicBridge-shaped mock: advisor lanes + rehearsal language (no legal outcomes).
+# OrgSim mock: department stakeholders debating a budget cut.
 _MOCK_AGENTS = [
-    {"name": "Evidence Coach", "role": "Evidence Coach", "dept": "Founder Immigration — Evidence"},
-    {"name": "Immigration Counsel", "role": "Immigration Attorney", "dept": "Founder Immigration — Counsel"},
-    {"name": "Tax Navigator", "role": "Tax Navigator", "dept": "Tax & payroll posture"},
-    {"name": "Founder Mentor", "role": "Founder Mentor", "dept": "Founder readiness"},
+    {"name": "CFO", "role": "CFO", "dept": "Finance"},
+    {"name": "VP Sales", "role": "VP of Sales", "dept": "Sales"},
+    {"name": "Ops Lead", "role": "Operations Lead", "dept": "Operations"},
+    {"name": "HR Director", "role": "HR Director", "dept": "HR"},
 ]
 
 _MOCK_EVENTS = [
-    ("agent_message", "Evidence Coach", "Indexing awards and comparable plans — one primary evidence tier still thin."),
-    ("agent_message", "Immigration Counsel", "Framing is coherent; we should avoid outcome language in client-facing notes."),
-    ("agent_message", "Tax Navigator", "Payroll start date vs. EAD effective date needs a single source of truth."),
-    ("agent_message", "Founder Mentor", "Runway tightens if counsel review slips past the filing window."),
-    ("agent_message", "Evidence Coach", "Expert letters are strong; publication timeline is the remaining gap."),
-    ("agent_message", "Immigration Counsel", "USCIS backlog assumptions belong in timing scenarios, not guarantees."),
-    ("agent_message", "Tax Navigator", "State residency flags if lease starts before payroll — worth rehearsing."),
-    ("agent_message", "Founder Mentor", "Ops load spikes around relocation — sequence healthcare enrollment early."),
-    ("conflict", "Evidence Coach", "Risk signal: filing deadline pressure vs. evidence completeness (strength 8/10)."),
-    ("conflict", "Founder Mentor", "Risk signal: runway cushion vs. counsel review bandwidth (strength 9/10)."),
-    ("agent_message", "Immigration Counsel", "Recommend parallel doc sprint rather than sequential holds."),
-    ("agent_message", "Tax Navigator", "Withholding elections should wait until first verified paystub."),
-    ("agent_message", "Founder Mentor", "Pilot a two-week buffer before hard commitments to landlords."),
-    ("agent_message", "Evidence Coach", "Comparable set expansion is higher leverage than more narrative."),
-    ("agent_message", "Immigration Counsel", "Consensus: rehearse two lanes — evidence sprint + payroll timing — before locking dates."),
+    ("agent_message", "CFO", "Q4 marketing is the discretionary line. A 20% cut protects runway without a hiring freeze."),
+    ("agent_message", "VP Sales", "Three late-stage deals depend on the campaigns this budget funds. Coverage drops under 3x."),
+    ("agent_message", "Ops Lead", "Delivery capacity does not shrink with the marketing line. Close dates will slip into next quarter."),
+    ("agent_message", "HR Director", "Quota pressure plus a public cut reads as instability. Attrition risk is on the AE team."),
+    ("agent_message", "CFO", "I will take the pipeline note. I will not hold the full budget after the cut is the decision."),
+    ("agent_message", "VP Sales", "Then move the cut to brand spend and keep the late-stage programs. Otherwise Q4 misses."),
+    ("agent_message", "Ops Lead", "Flag handoff dates before Finance locks the number. We are already at capacity."),
+    ("agent_message", "HR Director", "Do not pair this with a backfill freeze on the same team carrying the pipeline."),
+    ("conflict", "VP Sales", "Conflict: marketing cut vs. Q4 pipeline coverage (strength 8/10)."),
+    ("conflict", "HR Director", "Conflict: cost cut vs. quota-team attrition (strength 7/10)."),
+    ("agent_message", "CFO", "Compromise: cut 20% of brand, hold the programs tied to named late-stage deals."),
+    ("agent_message", "VP Sales", "That keeps the three deals. I can live with the brand cut if coverage stays above 3x."),
+    ("agent_message", "Ops Lead", "Accepted, if close dates are reforecast before the board pack."),
+    ("agent_message", "HR Director", "Accepted, if we do not freeze AE backfill in the same quarter."),
+    ("agent_message", "CFO", "Consensus: 20% brand cut, named-deal programs held, no AE freeze, reforecast the handoffs."),
 ]
 
 

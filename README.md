@@ -1,200 +1,174 @@
-# CivicBridge: Rehearsal for Immigration and First-1000-Days Decisions
+# OrgSim — Organizational Decision Rehearsal
 
-Planning aid that runs a panel of simulated advisors over a situation you describe, then returns an action report: known facts, open uncertainties, items to verify, and questions for a qualified professional. This repository is the CivicBridge v1 hackathon release. It also keeps the OrgSim rehearsal engine it was built on: cascade and swarm rounds, a FastAPI run API, and a Next.js rehearsal UI.
+OrgSim won the IBM agent orchestration hackathon. It rehearses a C-suite decision before anyone makes it. A panel of department agents — CFO, VP of Sales, Operations Lead, HR Director — argues from its own numbers, and the system forecasts the conflicts that exist only in the interaction between those departments.
 
-CivicBridge starts from a structured intake (situation, key facts, uncertainty chips) and lets advisor personas deliberate in place. A founder run uses Immigration Attorney, Evidence Coach, Founder Mentor, and Tax / Company Navigator. A first-1000-days run uses Banking Navigator, Healthcare Navigator, Housing Navigator, Tax Navigator, and Local Systems Mentor. Events stream to the browser. When the run completes, `GET /simulate/{id}` hydrates the transcript and the report. The same loop still finishes when the optional graph services are down, and it falls back to rule-based personas when no model endpoint is reachable.
+The loop is a proposed decision plus a set of departments. Personas are loaded from YAML, each with a KPI, a risk tolerance, and actions it will and will not take. Cascade lets the full panel speak every round. Swarm keeps a larger pool and activates a subset per round. After the rounds, a conflict extractor pairs opposing positions from different departments and writes an executive report.
 
-In this repo, the product surface is the rehearsal screen at `/simulate`. Advisor tracks are declared in `infra/config.yaml`. Persona text lives in `Simulation/templates/`. The run API is `Backend/api/routes/simulate.py`. The round engines are `Simulation/orgsim_engine/`.
+The demo is already on the simulate screen:
 
-![CivicBridge rehearsal screen with the founder demo prefilled](docs/civicbridge-rehearse.png)
+> The CFO has decided to cut the Q4 marketing budget by 20%. Simulate the organizational cascade over the next 90 days.
 
-**Note:** This repository was previously published as OrgSim, an organizational decision-rehearsal engine (department silos, CFO / VP Sales / Ops / HR personas, a "cut Q4 marketing 20%" demo). It has been retargeted. The department templates are still on disk as the legacy scaffold, and the repository now centers on CivicBridge. GitHub redirects the old project URL `0180150401/26` to [Sebastianrodaaa/org-simulator](https://github.com/Sebastianrodaaa/org-simulator).
+Departments selected: Sales, Finance, Operations, HR.
+
+![OrgSim simulate screen with the CFO budget-cut scenario](docs/orgsim-simulate.png)
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Rehearsal Loop](#rehearsal-loop)
+- [How a run works](#how-a-run-works)
 - [Architecture](#architecture)
 - [Features](#features)
-- [Directory Structure](#directory-structure)
+- [Directory structure](#directory-structure)
 - [Requirements](#requirements)
 - [Installation](#installation)
-  - [1. Clone the Repository](#1-clone-the-repository)
-  - [2. Python Environment](#2-python-environment)
-  - [3. Frontend Dependencies](#3-frontend-dependencies)
-  - [4. Optional Infrastructure](#4-optional-infrastructure)
-- [Model Backend Setup](#model-backend-setup)
-- [Running CivicBridge](#running-civicbridge)
-- [API Fields](#api-fields)
-- [Customizing Advisor Behavior](#customizing-advisor-behavior)
-- [Advanced Configuration](#advanced-configuration)
+  - [1. Clone](#1-clone)
+  - [2. Python](#2-python)
+  - [3. Frontend](#3-frontend)
+  - [4. Optional services](#4-optional-services)
+- [Model setup](#model-setup)
+- [Run the demo](#run-the-demo)
+- [API](#api)
+- [Stakeholder templates](#stakeholder-templates)
+- [Configuration](#configuration)
 - [Troubleshooting](#troubleshooting)
-- [Results](#results)
 
 ## Overview
 
-This repo packages the CivicBridge v1 demo on top of the OrgSim multi-agent engine. It provides:
+Existing enterprise tools automate a workflow that already exists. OrgSim runs a decision that has not been made and shows where Sales, Finance, Operations, and HR will collide.
 
-- **Founder rehearsal** — prefilled situation comparing O-1, EB-1A, and the International Entrepreneur Rule against company setup, evidence, dependents, and timing. The rehearsal screen sends `track: "founder"`.
-- **First-1000-days panel** — banking, healthcare, housing, tax, and local-systems advisors, selected by sending `track: "first1000"` on `POST /simulate`. The on-screen demo does not switch tracks by itself.
-- **Two engines** — `cascade` (the full panel speaks every round) and `swarm` (a larger pool; a subset speaks each round). The UI defaults to swarm, pool size 24, 8 active per round.
-- **Action report** — executive summary, risks, recommended actions, grounded facts, open uncertainties, facts to verify, questions for a professional, official source links, and a planning-aid caveat.
-- **Stub completion** — if the Simulation service on port 8001 is unreachable, the API still completes the run and attaches a snapshot so the report route can load.
-- **Seven locales** — English, Spanish, French, Italian, Chinese, Japanese, and Russian (`Frontend/messages/`).
+| Piece | What it does |
+| --- | --- |
+| Decision | Free-text scenario. The UI opens on the Q4 marketing cut. |
+| Departments | Sales, Finance, Operations, HR, plus Engineering and Marketing. |
+| Personas | One YAML file per role. Finance maps to the CFO, Sales and Marketing to VP Sales, Operations and Engineering to the Ops Lead, HR to the HR Director. |
+| Cascade | All selected roles speak every round. |
+| Swarm | Pool of agents. A subset speaks each round. UI default: pool 24, 8 active. |
+| Conflicts | Opposing messages from two departments in the same round, tagged resource, priority, timeline, or budget, with a severity. |
+| Report | Executive summary, conflicts, recommended actions, and the facts the scenario stated. |
 
-Eligibility, approval odds, and agency timelines are outside what this tool decides. The safety note on the rehearsal screen says so, and persona templates forbid guaranteeing an outcome.
+The rehearsal finishes without a cloud key. If OpenAI and Ollama are both unreachable, persona text and round actions fall back to the rules in the templates.
 
-## Rehearsal Loop
+## How a run works
 
-A run is one situation, one track, and one engine. The browser posts the scenario, opens a WebSocket, and renders advisor messages and the risk map as events arrive.
+1. The browser sends the decision and the selected departments to `POST /simulate`.
+2. The API on port 8000 opens a run and probes `http://127.0.0.1:8001/health`.
+3. The Simulation service builds personas from `infra/config.yaml` and `Simulation/templates/`.
+4. The chosen engine runs the rounds and streams `agent_message` events over a WebSocket.
+5. The conflict extractor emits cross-department conflicts.
+6. `GET /simulate/{run_id}` returns the transcript, the conflicts, and the report. Refreshing the report page still works.
 
-**What it does.**
-
-1. Intake collects the situation, six key facts (current status, goal, deadline, location, work or company, family or dependents), and uncertainty chips. Empty facts are allowed. Selected chips are written into the scenario text.
-2. The API creates a run and, when `http://127.0.0.1:8001/health` answers, calls the Simulation service.
-3. The service builds personas from the track templates in `infra/config.yaml` and `Simulation/templates/*.yaml`.
-4. Cascade or swarm runs the requested number of rounds and streams `agent_message` events. After the rounds, the conflict extractor emits risk-shaped events.
-5. `attach_snapshot_to_run` writes `messages`, `conflicts`, and `report` onto the run so `GET /simulate/{id}` can serve the action report, including after a refresh.
-
-**Running it.** Three processes. From the repo root, with the virtualenv active:
+Start all three, from the repo root, with the virtualenv active:
 
 ```bash
-# API
 cd Backend && uvicorn api.main:app --reload --port 8000
+```
 
-# Rehearsal engine
+```bash
 cd Simulation && uvicorn app:app --reload --port 8001
+```
 
-# UI
+```bash
 cd Frontend && npm run dev
 ```
 
-Open [http://localhost:3000/simulate](http://localhost:3000/simulate). The founder situation is already filled in. Press **Run rehearsal**. When the risk map marks complete, open the action report.
+Open [http://localhost:3000/simulate](http://localhost:3000/simulate) and press **Run simulation**.
 
-Create a first-1000-days run directly:
+The same scenario from the shell, against an API that is already up:
 
 ```bash
 curl -s -X POST http://127.0.0.1:8000/simulate \
   -H 'content-type: application/json' \
   -d '{
-    "decision": "I arrived recently and need to sequence an identifier, a bank account, health coverage, housing, and taxes before a lease deadline.",
-    "track": "first1000",
+    "decision": "The CFO has decided to cut the Q4 marketing budget by 20%. Simulate the organizational cascade over the next 90 days.",
+    "departments": ["Sales", "Finance", "Operations", "HR"],
     "engine": "cascade",
     "rounds": 4
   }'
 ```
 
-Then open `http://localhost:3000/report/<run_id>`.
-
-The legacy department demo is still callable when `track` is omitted and `departments` is a subset of Sales, Finance, Operations, HR, Engineering, Marketing. That path uses the old CFO / VP Sales / Ops / HR templates. CivicBridge runs should send `track`.
+Or `cd Backend && python -m demo.seed_demo`.
 
 ## Architecture
 
-The UI is a client of the API. The API is a client of the Simulation service. Optional services (TypeDB, Neo4j, NATS, Temporal, Ollama) are probed at startup and skipped when they refuse the connection.
-
-Typical process layout:
-
-- `Frontend` (`next dev`, port 3000) renders `/simulate`, `/dashboard`, and `/report/[id]`. It calls `POST /simulate` and subscribes to `/ws/simulation/{run_id}`.
-- `Backend` (port 8000) stores the run in memory, relays stream events, and attaches the report snapshot.
-- `Simulation` (port 8001) exposes `/generate-personas`, `/stream-simulation`, `/extract-conflicts`, `/generate-report`, and `/health`.
-- The web app is the product UI. There is no separate stream page; the rehearsal screen is the live view.
-
 ```
-[Next.js /simulate] -- POST /simulate --> [FastAPI :8000]
-        |                                      |
-        | WebSocket /ws/simulation/{id}        | NDJSON stream
-        |                                      v
-        +--------------------------- [Simulation :8001]
-                                      personas → cascade | swarm → risks → report
+Decision + departments
+        │
+        ▼
+FastAPI :8000  ──WebSocket──►  Next.js /simulate
+        │
+        │  NDJSON
+        ▼
+Simulation :8001
+  personas → cascade | swarm → conflict extractor → report
 ```
 
-Module map:
+TypeDB, Neo4j, NATS JetStream, and Temporal are in `docker-compose.yml`. The demo does not require them. The API logs a warning and keeps going when a connection is refused.
 
 | Path | Role |
 | --- | --- |
-| `Backend/api/main.py` | FastAPI app, CORS for local Next.js ports, lifespan connects |
-| `Backend/api/routes/simulate.py` | `POST /simulate`, `GET /simulate/{run_id}`, stub completion |
-| `Backend/api/services/live_simulation.py` | Probes port 8001 and drives the streaming pipeline |
-| `Backend/api/simulation_snapshot.py` | Builds the GET payload (messages, risks, report) |
-| `Backend/api/ws/simulation.py` | WebSocket relay; optional scripted mock when `ORGSIM_ALLOW_MOCK_WEBSOCKET` is set |
-| `Simulation/app.py` | Simulation HTTP service |
+| `Frontend/app/[locale]/simulate/page.tsx` | Scenario, department chips, live trace, graph |
+| `Backend/api/routes/simulate.py` | Create a run, fetch a run |
+| `Backend/api/ws/simulation.py` | Stream events to the browser |
+| `Backend/api/simulation_snapshot.py` | Attach messages, conflicts, and the report to GET |
+| `Simulation/app.py` | Persona, stream, conflict, and report routes |
 | `Simulation/orgsim_engine/decision_cascade.py` | Full-panel rounds |
 | `Simulation/orgsim_engine/swarm_cascade.py` | Subset-of-pool rounds |
-| `Simulation/conflict/extractor.py` | Risk pairs from the transcript |
-| `Simulation/report_agent.py` | Report compilation |
-| `infra/config.yaml` | Track → template ids, swarm defaults |
+| `Simulation/conflict/extractor.py` | Cross-department conflicts |
+| `Simulation/org_persona_generator.py` | Persona text, including the rule fallback |
+| `infra/config.yaml` | Department name → template id, swarm sizes |
 
 ## Features
 
-- **Two advisor tracks** in `infra/config.yaml`: `founder` and `first1000`.
-- **Role-specific personas.** Each YAML template sets scope, forbidden actions (including outcome guarantees), and a behavioral bias. See `Simulation/templates/`.
-- **Cascade and swarm** on both the API and the rehearsal screen.
-- **Live activity trace and risk map** (`Frontend/components/ConflictGraph.tsx`, `SwarmInteractionGraph.tsx`).
-- **Report that separates fact buckets:** grounded facts, open uncertainties, verify-before-acting, professional questions, source links, caveat.
-- **Locale switcher** in the nav. Default locale is English; the prefix is omitted for `en`.
-- **Demo without cloud keys.** Unreachable Ollama or a missing `OPENAI_API_KEY` falls through to rule-based persona text and round decisions.
-- **Optional Docker stack** in `docker-compose.yml`: TypeDB 3.3, Neo4j 5, NATS JetStream, Temporal, Ollama, and the simulation image.
-- **Tests:** `pytest Simulation/tests` (16 tests) and `pytest Backend/tests/test_stub_snapshot.py`.
+- Role-specific bias. The CFO optimizes runway and prefers a budget cut. VP Sales protects pipeline coverage. Operations protects capacity. HR protects retention under quota pressure.
+- Forbidden actions on each template. The CFO cannot add headcount or approve unbudgeted spend.
+- Cascade and swarm, selectable on the simulate screen.
+- Live activity trace and a swarm or conflict graph.
+- Department snapshot at `/dashboard`.
+- Executive report at `/report/{run_id}`.
+- Scripted stakeholder stream for demos with no Simulation service: set `ORGSIM_ALLOW_MOCK_WEBSOCKET=1` on the API.
 
-## Directory Structure
+## Directory structure
 
 ```
 org-simulator/
 ├── README.md
-├── requirements.txt          # Python deps for Backend + Simulation
-├── docker-compose.yml        # Optional TypeDB, Neo4j, NATS, Temporal, Ollama
+├── requirements.txt
+├── docker-compose.yml          # TypeDB, Neo4j, NATS, Temporal, Ollama
 ├── infra/
-│   ├── config.yaml           # Advisor tracks and swarm defaults
-│   └── mock/                 # Legacy department fixtures (CSV / JSON / YAML)
+│   ├── config.yaml             # department → persona
+│   └── mock/                   # sales_pipeline.csv, finance_pl.json, ops_capacity.yaml, hr_people.json
 ├── Backend/
-│   ├── api/
-│   │   ├── main.py
-│   │   ├── routes/simulate.py
-│   │   ├── routes/health.py
-│   │   ├── services/live_simulation.py
-│   │   ├── simulation_snapshot.py
-│   │   └── ws/simulation.py
-│   ├── demo/seed_demo.py     # Legacy department demo seeder
-│   ├── loaders/              # TypeDB loaders
-│   ├── schema/
-│   └── tests/
+│   ├── api/                    # FastAPI, port 8000
+│   ├── demo/seed_demo.py       # CFO scenario
+│   ├── loaders/                # TypeDB loaders
+│   └── schema/
 ├── Simulation/
-│   ├── app.py                # Port 8001
-│   ├── org_persona_generator.py
-│   ├── orgsim_engine/        # decision_cascade.py, swarm_cascade.py
-│   ├── conflict/extractor.py
-│   ├── report_agent.py
-│   ├── templates/            # One YAML file per advisor
+│   ├── app.py                  # port 8001
+│   ├── templates/              # cfo, vp_sales, ops_lead, hr_director
+│   ├── orgsim_engine/
+│   ├── conflict/
 │   └── tests/
-├── Frontend/
-│   ├── app/[locale]/simulate/page.tsx
-│   ├── app/[locale]/dashboard/page.tsx
-│   ├── app/[locale]/report/[id]/page.tsx
-│   ├── messages/             # en, es, fr, it, zh, ja, ru
-│   └── lib/api.ts            # NEXT_PUBLIC_API_URL, default http://localhost:8000
-└── docs/
-    └── civicbridge-rehearse.png
+├── Frontend/                   # Next.js simulate, dashboard, report
+└── docs/orgsim-simulate.png
 ```
 
 ## Requirements
 
 - Python 3.11 or 3.12
 - Node.js 20+
-- A model endpoint only if you want generated persona text instead of the rule fallback (see [Model Backend Setup](#model-backend-setup))
-- Docker Desktop only if you want TypeDB, Neo4j, NATS, Temporal, or containerized Ollama
-
-The rehearsal screen, the API, and the Simulation service run without those containers.
+- An OpenAI or Ollama model only if you want generated lines instead of the template rules
+- Docker only if you want TypeDB, Neo4j, NATS, Temporal, or containerized Ollama
 
 ## Installation
 
-### 1. Clone the Repository
+### 1. Clone
 
 ```bash
 git clone https://github.com/Sebastianrodaaa/org-simulator
 cd org-simulator
 ```
 
-### 2. Python Environment
+### 2. Python
 
 ```bash
 python3.11 -m venv .venv
@@ -202,36 +176,34 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Use the activated environment for every `uvicorn` and `pytest` command below.
+Use this environment for `uvicorn` and `pytest`.
 
-### 3. Frontend Dependencies
+### 3. Frontend
 
 ```bash
 cd Frontend
 npm install
 ```
 
-### 4. Optional Infrastructure
+### 4. Optional services
 
 ```bash
 docker compose up -d
 ```
 
-The demo does not wait on these containers. The API logs a warning and continues when NATS or Temporal refuse the connection. TypeDB loaders (`python -m loaders.run_all` from `Backend`) are for the legacy department graph, not for the founder rehearsal.
+TypeDB loaders, from `Backend`: `python -m loaders.run_all`. The CFO demo runs without that step.
 
-## Model Backend Setup
+## Model setup
 
-Persona generation and round decisions share one selection rule, implemented in `Simulation/org_persona_generator.py` and `Simulation/orgsim_engine/decision_cascade.py`:
+Persona generation and each round share one rule.
 
-| Mode | How it is selected | What you set |
+| Mode | When | Env |
 | --- | --- | --- |
-| OpenAI | `OPENAI_API_KEY` starts with `sk-`, or `ORGSIM_USE_CLOUD_OPENAI=1` | `Simulation/.env` with `OPENAI_API_KEY` and `LLM_MODEL_NAME` set to an OpenAI model id, for example `gpt-4o-mini` |
-| Ollama | Cloud mode is off | `OLLAMA_HOST` (default `http://127.0.0.1:11434`). `LLM_MODEL_NAME` defaults to `qwen2.5:14b`, which is also the compose default |
-| Rules | The chosen endpoint errors or is absent | Nothing. The run continues with template-based persona text and round actions |
+| OpenAI | `OPENAI_API_KEY` starts with `sk-`, or `ORGSIM_USE_CLOUD_OPENAI=1` | `Simulation/.env`: `OPENAI_API_KEY` and `LLM_MODEL_NAME=gpt-4o-mini` |
+| Ollama | Cloud mode is off | `OLLAMA_HOST` defaults to `http://127.0.0.1:11434`. `LLM_MODEL_NAME` defaults to `qwen2.5:14b` |
+| Rules | That endpoint errors or is missing | Nothing to set. The demo still completes |
 
-`Simulation/.env` is gitignored. A Tavily key in that file is read by the persona generator for optional enrichment; the rehearsal still runs without it.
-
-Example cloud env file:
+`Simulation/.env` is gitignored.
 
 ```bash
 # Simulation/.env
@@ -240,33 +212,18 @@ LLM_MODEL_NAME=gpt-4o-mini
 ORGSIM_USE_CLOUD_OPENAI=1
 ```
 
-Example local model:
-
-```bash
-# Simulation/.env
-OLLAMA_HOST=http://127.0.0.1:11434
-LLM_MODEL_NAME=qwen2.5:14b
-```
-
-## Running CivicBridge
-
-Start the three processes from [Rehearsal Loop](#rehearsal-loop). Health checks:
+## Run the demo
 
 ```bash
 curl -s http://127.0.0.1:8000/health
 curl -s http://127.0.0.1:8001/health
 ```
 
-UI routes, with `en` unprefixed:
-
-| Route | Page |
+| URL | Screen |
 | --- | --- |
-| `http://localhost:3000/simulate` | Intake, live trace, risk map |
-| `http://localhost:3000/dashboard` | Planning-domain overview |
-| `http://localhost:3000/report/<run_id>` | Action report |
-| `http://localhost:3000/es/simulate` | Same screen in Spanish. Also `fr`, `it`, `zh`, `ja`, `ru` |
-
-Tests:
+| http://localhost:3000/simulate | Decision, departments, live trace, graph |
+| http://localhost:3000/dashboard | Sales, Finance, Operations, HR |
+| http://localhost:3000/report/`<run_id>` | Executive report |
 
 ```bash
 pytest Simulation/tests -v
@@ -274,98 +231,76 @@ pytest Backend/tests/test_stub_snapshot.py -v
 cd Frontend && npm run lint && npm run build
 ```
 
-`Backend/demo/seed_demo.py` still drives the old department scenario against port 8000 (`python -m demo.seed_demo`, optional `--start-api`, `--skip-loaders`). Use the rehearsal screen or the `track` curl above for CivicBridge.
+## API
 
-## API Fields
-
-`POST /simulate` accepts this body (`Backend/api/routes/simulate.py`). Status code is 202. Poll `GET /simulate/{run_id}` or listen on `/ws/simulation/{run_id}`.
+`POST /simulate` returns 202. Body fields:
 
 | Field | Description |
 | --- | --- |
-| `decision` | Situation text. Required, non-empty. The UI prepends key facts and uncertainty chips. |
-| `track` | `founder` or `first1000`. When set, department names are ignored and advisor templates come from `infra/config.yaml`. |
-| `departments` | Legacy only. Required when `track` is omitted. Allowed names: Sales, Finance, Operations, HR, Engineering, Marketing. |
+| `decision` | Required. The proposed decision. |
+| `departments` | One or more of Sales, Finance, Operations, HR, Engineering, Marketing. |
 | `engine` | `cascade` or `swarm`. Default `swarm`. |
-| `rounds` | Integer 1–40. The UI sends 4 for swarm and 15 for cascade. The streaming pipeline caps swarm at 15 rounds. |
-| `swarm_size` | Pool size for swarm. Default 24. Bounds 4–512. |
-| `max_active_per_round` | Speakers per swarm round. Default 8. Bounds 2–128. |
+| `rounds` | 1–40. The UI sends 4 for swarm and 15 for cascade. Swarm is capped at 15 in the streaming pipeline. |
+| `swarm_size` | Pool size. Default 24. Range 4–512. |
+| `max_active_per_round` | Speakers per swarm round. Default 8. Range 2–128. |
 
-`GET /simulate/{run_id}` adds `messages`, `conflicts`, `report`, and `recommendation` once the snapshot is attached. Report keys include `executive_summary`, `key_risks`, `recommended_actions`, `known_facts`, `unknown_facts`, `must_verify_facts`, `professional_questions`, `source_links`, `caveat`, and `confidence_score`. `confidence_score` is a rehearsal score, not an approval probability.
+`GET /simulate/{run_id}` adds `messages`, `conflicts`, `report`, and `recommendation` once the run snapshot is attached.
 
-Simulation service routes on port 8001:
+`confidence_score` on the report is a rehearsal score, not a probability that the decision is correct.
+
+Simulation service, port 8001:
 
 | Route | Role |
 | --- | --- |
-| `GET /health` | Liveness. The API uses this to decide live vs stub. |
-| `POST /generate-personas` | Build personas for a decision and optional `track`. |
+| `GET /health` | Liveness. The API uses this to choose a live run or the stub. |
+| `POST /generate-personas` | Build personas for the decision and departments. |
 | `POST /stream-simulation` | NDJSON event stream for one run. |
 | `POST /run-simulation` | Blocking run. |
-| `POST /extract-conflicts` | Risk extraction over a message list. |
+| `POST /extract-conflicts` | Conflicts over a message list. |
 | `POST /generate-report` | Report compilation. |
 
-## Customizing Advisor Behavior
+## Stakeholder templates
 
-Track membership is `simulation.advisor_tracks` in `infra/config.yaml`. Point `ORGSIM_CONFIG` at another YAML file to override the path. The loader merges that file over the defaults in `Simulation/config_loader.py`.
+`simulation.department_templates` in `infra/config.yaml` maps an API department name to a file in `Simulation/templates/`. Point `ORGSIM_CONFIG` at another YAML file to replace it. Restart the Simulation service after an edit.
 
-Edit a persona by changing its YAML file under `Simulation/templates/` and restarting the Simulation service. Fields that steer behavior:
+Each template has:
 
-- `role_title`, `department`, `agent_id` — what the transcript and risk map show
-- `data_scope` / `action_scope` — including `forbidden` actions such as `guarantee_outcome`
-- `behavioral_bias` — `primary_kpi`, `risk_tolerance`, pushback and alignment triggers
+| Field | Effect |
+| --- | --- |
+| `role_title`, `department`, `agent_id` | Name on the transcript and the graph |
+| `data_scope.read` / `data_scope.deny` | What that role can see |
+| `action_scope.permitted` / `forbidden` | What that role will and will not do |
+| `behavioral_bias` | `primary_kpi`, `risk_tolerance`, pushback triggers, alignment triggers, `preferred_action` |
 
-UI copy, the prefilled founder situation, uncertainty chips, and the safety note are in `Frontend/messages/en.json` under `simulate` (and the matching locale files). Restart `npm run dev` after editing them.
+Finance example, from `Simulation/templates/cfo.yaml`: primary KPI `runway_months`, preferred action `propose_budget_cut`, forbidden `propose_headcount_add` and `approve_unbudgeted_spend`.
 
-The rehearsal screen's track is the constant `DEFAULT_TRACK` in `Frontend/app/[locale]/simulate/page.tsx`. It is `founder`.
-
-## Advanced Configuration
+## Configuration
 
 | Variable | Where | Effect |
 | --- | --- | --- |
 | `NEXT_PUBLIC_API_URL` | `Frontend/.env.local` | API origin. Default `http://localhost:8000`. Restart Next after changing it. |
-| `SIMULATION_SERVICE_URL` | API process | Explicit Simulation base URL. When unset, the API probes `http://127.0.0.1:8001`. |
-| `ORGSIM_CONFIG` | Simulation process | Config YAML path. Default `infra/config.yaml`. |
-| `ORGSIM_ALLOW_MOCK_WEBSOCKET` | API process | `1` / `true` / `yes` enables the scripted advisor stream when no live queue is attached. Off by default. |
-| `OPENAI_API_KEY`, `ORGSIM_USE_CLOUD_OPENAI`, `LLM_MODEL_NAME`, `OLLAMA_HOST` | Simulation process | Model selection. See [Model Backend Setup](#model-backend-setup). |
-| `TYPEDB_HOST`, `TYPEDB_PORT` | API process | Health check. Defaults `localhost:1729`. |
-| `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD` | API process | Health check. Compose sets the local Neo4j auth. |
+| `SIMULATION_SERVICE_URL` | API process | Simulation base URL. Unset: probe `http://127.0.0.1:8001`. |
+| `ORGSIM_CONFIG` | Simulation process | Config path. Default `infra/config.yaml`. |
+| `ORGSIM_ALLOW_MOCK_WEBSOCKET` | API process | `1`, `true`, or `yes` plays the scripted CFO / VP Sales / Ops / HR stream when no live queue is attached. Off by default. |
+| `OPENAI_API_KEY`, `ORGSIM_USE_CLOUD_OPENAI`, `LLM_MODEL_NAME`, `OLLAMA_HOST` | Simulation process | Model selection. See [Model setup](#model-setup). |
+| `TYPEDB_HOST`, `TYPEDB_PORT` | API process | Health check. Default `localhost:1729`. |
+| `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD` | API process | Health check. Credentials are set in `docker-compose.yml`. |
 | `NATS_URL` | API and Simulation | Default `nats://localhost:4222`. Publish is skipped when NATS is down. |
 
-Swarm defaults in `infra/config.yaml`: engine `swarm`, `swarm_size` 24, `max_active_per_round` 8, `swarm_peer_recent` 10, `swarm_context_messages` 120.
+Swarm defaults in `infra/config.yaml`: engine `swarm`, pool 24, 8 active per round.
 
-Runs are stored in process memory (`Backend/api/run_store.py`). Restarting the API drops them. There is no checkpoint directory in v1.
+Runs live in process memory (`Backend/api/run_store.py`). Restarting the API drops them.
 
 ## Troubleshooting
 
-**`Failed to start simulation` in the browser.** The UI cannot reach the API. Confirm `curl http://127.0.0.1:8000/health` and that `NEXT_PUBLIC_API_URL` matches that origin. Restart `npm run dev` after changing `.env.local`.
+**The button says it failed to start.** The UI cannot reach the API. `curl http://127.0.0.1:8000/health` should return 200. If the API is on another port, set `NEXT_PUBLIC_API_URL` and restart `npm run dev`.
 
-**Risk map stays empty and the socket reports no live stream.** The Simulation service was not up when the run was created, or the WebSocket connected after the queue closed. Start port 8001, then start a new run. `GET /simulate/{id}` can still return a stub report.
+**The graph stays empty.** The Simulation service was not up when the run was created. Start port 8001 and run again. `GET /simulate/{id}` can still return the stub report.
 
-**Persona logs say the seed report is missing.** Expected for CivicBridge templates until `Backend/output/*_seed.md` exists. The generator uses a stub seed and continues.
+**Logs say the seed report is missing.** The persona generator continues with a stub seed. Load department data with `cd Backend && python -m loaders.run_all` when TypeDB is up.
 
-**Ollama model 404, or `DSPy/Ollama unavailable`.** The process is pointed at a local model that is not loaded. Pull that model, point `LLM_MODEL_NAME` at one that exists, or unset the cloud key and let the rule fallback run. The fallback is the supported demo path.
+**Ollama returns model 404, or DSPy says the endpoint is unavailable.** `LLM_MODEL_NAME` does not match a loaded model. Pull that model, or leave the endpoint down and use the rule fallback.
 
-**`uvicorn` or `pytest` immediately exits 126.** The virtualenv scripts were created in another directory and their shebangs are stale. Recreate `.venv` in this clone (`python3.11 -m venv .venv`) or invoke `python -m uvicorn` and `python -m pytest` with that interpreter.
+**`uvicorn` or `pytest` exits 126.** The virtualenv was created in another directory and the script shebangs are stale. Recreate it in this clone: `python3.11 -m venv .venv`. Or call `python -m uvicorn` and `python -m pytest` with that interpreter.
 
-**Port already in use.** API default is 8000, Simulation 8001, Next 3000. Pass `--port` to uvicorn or `npm run dev -- --port 3001`. If Next moves, CORS on the API already allows localhost on any port; set `NEXT_PUBLIC_API_URL` if the API is not on 8000.
-
-**Report language promises an outcome.** That is a bug. Persona templates forbid outcome guarantees, and the report caveat is supposed to stay a planning aid. File it against the template or `Simulation/report_agent.py` rather than treating the sentence as guidance.
-
-## Results
-
-Shipped v1.0 was audited on 2026-05-09. A local founder cascade was run on 2026-10-26 with the on-screen demo and the rule-based fallback.
-
-| Check | Result |
-| --- | --- |
-| v1 requirements | 23 / 23 satisfied |
-| Phases verified | 6 / 6 |
-| Critical paths | Intake → live simulation → report; backend stub → report; WebSocket history → report |
-| Example founder cascade | Completed. 60 advisor messages across 15 rounds. Report hydrated on GET |
-| Report contents | Known facts, open uncertainties, verify-before-acting items, professional questions, source links, caveat |
-| Simulation tests | 16 passed |
-| Stub report test | 1 passed (`Backend/tests/test_stub_snapshot.py`) |
-| Languages in the UI | English, Spanish, French, Italian, Chinese, Japanese, Russian |
-
-| Track | Advisors | What the rehearsal is for |
-| --- | --- | --- |
-| `founder` | Immigration Attorney, Evidence Coach, Founder Mentor, Tax / Company Navigator | Compare a pathway, evidence, company setup, and timing. The output is a rehearsal, not an eligibility decision. |
-| `first1000` | Banking, Healthcare, Housing, Tax, Local Systems | Sequence identifiers, money, coverage, housing, and taxes, and list what still needs a professional or an official page. |
+**Port already in use.** API 8000, Simulation 8001, Next 3000. Pass `--port` to uvicorn, or `npm run dev -- --port 3001`. CORS on the API allows localhost on any port. Set `NEXT_PUBLIC_API_URL` when the API is not on 8000.
