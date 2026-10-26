@@ -23,9 +23,9 @@ export interface PlanTask {
 export const planInitialTasksEn: PlanTask[] = [
   {
     id: '1',
-    title: 'Load Situation Snapshots',
+    title: 'Load department snapshots',
     description:
-      "Read structured notes for each advisor perspective to ground reasoning in the user's real situation.",
+      'Read the pipeline, runway, capacity, and attrition numbers each stakeholder will argue from.',
     status: 'completed',
     priority: 'high',
     level: 0,
@@ -42,8 +42,8 @@ export const planInitialTasksEn: PlanTask[] = [
       },
       {
         id: '1.2',
-        title: 'Timeline snapshot',
-        description: 'evidence roadmap budget $280K, runway 18 months, burn $620K/mo.',
+        title: 'Finance snapshot',
+        description: 'Q4 marketing budget on the block, runway 18 months, burn $620K/mo.',
         status: 'completed',
         priority: 'high',
         tools: ['typedb', 'file-system'],
