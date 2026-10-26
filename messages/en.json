@@ -1,0 +1,384 @@
+{
+  "nav": {
+    "brand": "OrgSim",
+    "rehearse": "Simulate",
+    "overview": "Dashboard",
+    "language": "Language"
+  },
+  "metadata": {
+    "title": "OrgSim — Organizational Decision Rehearsal",
+    "description": "Simulate a proposed decision across departments and surface cross-team conflicts before you make it."
+  },
+  "common": {
+    "loading": "Loading…",
+    "close": "Close"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "it": "Italiano",
+    "zh": "中文",
+    "ja": "日本語",
+    "ru": "Русский"
+  },
+  "simulate": {
+    "scenarioSituationLabel": "Situation:",
+    "scenarioKeyFactsLabel": "Key facts:",
+    "scenarioUncertaintyLabel": "Uncertainty and review flags:",
+    "scenarioNoneSelected": "- None selected",
+    "scenarioNotProvided": "- Not provided yet",
+    "demoMode": "Demo mode",
+    "demoHint": "Sample situation and fields are pre-filled. Press Run to begin.",
+    "situationTitle": "Situation",
+    "situationPlaceholder": "Describe your goal, current status, deadline, location, and what feels uncertain.",
+    "uncertaintySection": "Uncertainty and privacy",
+    "safetyHeading": "Safety note",
+    "engineTitle": "Simulation engine",
+    "engineCascade": "Cascade",
+    "engineSwarm": "Swarm",
+    "poolSize": "Pool size",
+    "activePerRound": "Active/round",
+    "runStarting": "Starting…",
+    "runRunning": "Rehearsal running",
+    "runCta": "Run rehearsal",
+    "errorStart": "Failed to start simulation",
+    "activityComplete": "Activity trace",
+    "activityError": "Connection error",
+    "activityLive": "Live activity",
+    "detectedRisks": "Detected conflicts",
+    "viewReport": "View simulation report →",
+    "riskMapPreview": "Risk Map Preview",
+    "riskMapPreviewHint": "Run a rehearsal to see advisor perspectives, risks, and next steps appear here.",
+    "advisorDeliberation": "Advisor Deliberation",
+    "riskMap": "Risk Map",
+    "live": "live",
+    "complete": "complete",
+    "agentsSurfaced": "{count} agents surfaced",
+    "interactionsCount": "{count} interactions",
+    "risksCount": "{count} risks",
+    "risksCountOne": "{count} risk",
+    "runToSeeRisks": "Run a rehearsal to see risks",
+    "advisorLegend": "Advisor legend",
+    "swarmNodeHint": "Node size = message volume",
+    "swarmArrowHint": "Arrow = next speaker in same round",
+    "severityLegend": "Severity",
+    "dragHint": "drag to reposition",
+    "sevLow": "low",
+    "sevMedium": "medium",
+    "sevHigh": "high",
+    "conflictTypes": {
+      "resource": "resource",
+      "priority": "priority",
+      "timeline": "timeline",
+      "budget": "budget"
+    },
+    "perspectiveLabel": "advisor perspective",
+    "safetyNote": "OrgSim rehearses the decision. It forecasts where departments will collide. It does not make the decision for you.",
+    "prefill": {
+      "situation": "I am an immigrant founder trying to stay in the US while building a company. I want to compare O-1, EB-1A, and the International Entrepreneur Rule, understand company setup needs, and avoid runway timing surprises.",
+      "keyFacts": {
+        "currentStatus": "In the US on a temporary status",
+        "goal": "Keep building the company while preparing a stronger long-term pathway",
+        "deadline": "Need a credible plan before the next funding and status milestone",
+        "location": "United States",
+        "workCompanyFacts": "Early-stage company, US customers, evidence still scattered",
+        "familyDependents": "Need to understand dependent impact before acting"
+      },
+      "uncertaintyIds": [
+        "professional_review",
+        "deadline_uncertain",
+        "worried_sharing"
+      ]
+    },
+    "keyFacts": {
+      "currentStatus": {
+        "label": "Current status",
+        "placeholder": "Current visa, arrival, or setup status"
+      },
+      "goal": {
+        "label": "Goal",
+        "placeholder": "What you are trying to make possible"
+      },
+      "deadline": {
+        "label": "Deadline",
+        "placeholder": "Key date or timing pressure"
+      },
+      "location": {
+        "label": "Location",
+        "placeholder": "City, state, or country context"
+      },
+      "workCompanyFacts": {
+        "label": "Work or company facts",
+        "placeholder": "Employer, company, income, or evidence notes"
+      },
+      "familyDependents": {
+        "label": "Family or dependents",
+        "placeholder": "Who else is affected"
+      }
+    },
+    "uncertaintyChip": {
+      "unsure_status": "I am not sure about my status",
+      "deadline_uncertain": "Deadline is uncertain",
+      "professional_review": "I need professional review",
+      "money_tight": "Money is tight",
+      "unknown_agency": "I do not know which agency applies",
+      "worried_sharing": "I am worried about sharing details"
+    },
+    "uncertaintyIds": [
+      "unsure_status",
+      "deadline_uncertain",
+      "professional_review",
+      "money_tight",
+      "unknown_agency",
+      "worried_sharing"
+    ],
+    "previewAdvisors": [
+      "Immigration Attorney",
+      "Evidence Coach",
+      "Founder Mentor",
+      "Tax/Company Navigator",
+      "Banking",
+      "Healthcare"
+    ]
+  },
+  "dashboard": {
+    "planningTitle": "Department health",
+    "planningIntro": "Snapshot of Sales, Finance, Operations, and HR. Run a simulation for the decision in front of you.",
+    "sampleFeed": "Sample stakeholder feed →",
+    "hubsTitle": "Where the decision lands",
+    "hubsIntro": "Functions touched by the rehearsal. Not offices — the departments in the cascade.",
+    "hubsCount": "{active} / {total} hubs highlighted",
+    "highlighted": "highlighted",
+    "quiet": "quiet",
+    "rehearsalsTitle": "Simulations",
+    "rehearsalsHint": "Start a run to see stakeholder deliberation and conflicts in real time.",
+    "noRehearsal": "No active simulation on this device. Open Simulate to start one.",
+    "startRehearsal": "Start simulation",
+    "badge": {
+      "onTrack": "On track",
+      "needsAttention": "Needs attention",
+      "highTension": "High tension"
+    },
+    "domains": {
+      "sales": {
+        "title": "Sales",
+        "metrics": [
+          {
+            "label": "Open pipeline",
+            "value": "$4.2M"
+          },
+          {
+            "label": "Win rate",
+            "value": "34%"
+          },
+          {
+            "label": "Q4 coverage",
+            "value": "At risk"
+          }
+        ]
+      },
+      "finance": {
+        "title": "Finance",
+        "metrics": [
+          {
+            "label": "Runway",
+            "value": "18 mo"
+          },
+          {
+            "label": "Q4 marketing",
+            "value": "-20%"
+          },
+          {
+            "label": "Spend posture",
+            "value": "Cut"
+          }
+        ]
+      },
+      "operations": {
+        "title": "Operations",
+        "metrics": [
+          {
+            "label": "Capacity",
+            "value": "Tight"
+          },
+          {
+            "label": "Handoffs",
+            "value": "Slipping"
+          },
+          {
+            "label": "Infra cost",
+            "value": "Flat"
+          }
+        ]
+      },
+      "hr": {
+        "title": "HR",
+        "metrics": [
+          {
+            "label": "Attrition risk",
+            "value": "Rising"
+          },
+          {
+            "label": "Quota load",
+            "value": "High"
+          },
+          {
+            "label": "Backfill",
+            "value": "Frozen"
+          }
+        ]
+      }
+    },
+    "hubs": [
+      {
+        "id": "sf",
+        "city": "Sales",
+        "focus": "Pipeline and quota"
+      },
+      {
+        "id": "nyc",
+        "city": "Finance",
+        "focus": "Runway and spend"
+      },
+      {
+        "id": "austin",
+        "city": "Operations",
+        "focus": "Capacity and delivery"
+      },
+      {
+        "id": "toronto",
+        "city": "HR",
+        "focus": "Attrition and load"
+      },
+      {
+        "id": "london",
+        "city": "Engineering",
+        "focus": "Shared with Operations"
+      },
+      {
+        "id": "berlin",
+        "city": "Marketing",
+        "focus": "Budget under the cut"
+      }
+    ]
+  },
+  "report": {
+    "generating": "Report generating…",
+    "loadError": "Failed to load report",
+    "runMeta": "Run {id} · {date}",
+    "executiveSummary": "Executive summary",
+    "execDisclaimer": "Stakeholder coordination from the rehearsal. A forecast of conflict, not a decision already made.",
+    "confidenceScore": "Confidence Score",
+    "keyRisks": "Key conflicts",
+    "recommendedActions": "Recommended Actions",
+    "groundedFacts": "Grounded facts",
+    "openUncertainties": "Open uncertainties",
+    "mustVerify": "Verify before acting",
+    "questionsPro": "Questions for a professional",
+    "sources": "Sources",
+    "riskTimeline": "Risk timeline",
+    "riskTimelineHint": "Tensions between advisor lanes detected during the rehearsal.",
+    "round": "Rnd {n}",
+    "advisorTranscript": "Advisor transcript ({count} messages)",
+    "roundHeading": "Round {n}"
+  },
+  "drawer": {
+    "sampleRehearsalFeed": "sample rehearsal feed",
+    "liveSample": "Live — sample advisor messages for {title}",
+    "sampleComplete": "Sample complete — {count} messages (rehearsal illustration only)",
+    "connecting": "Connecting…",
+    "waitingSample": "Waiting for sample messages…",
+    "notLegalAdvice": "Not legal advice — use Rehearse for a full run.",
+    "messageCount": "{count} messages",
+    "goRehearsal": "Go to rehearsal →"
+  },
+  "graph": {
+    "empty": "Advisor lanes appear here as messages stream in.",
+    "ariaNetwork": "Advisor risk rehearsal network",
+    "swarmEmpty": "Waiting for swarm agents…",
+    "close": "Close",
+    "risksHeading": "Risks ({count})",
+    "lastMessage": "Last message",
+    "noActivity": "No activity on this lane yet.",
+    "vs": "vs",
+    "swarmAria": "Swarm interaction graph",
+    "meta": {
+      "evidence": {
+        "role": "Evidence & documentation",
+        "agent": "Advisor lane",
+        "bias": "Surfaces gaps in proof, timelines, and professional-review triggers."
+      },
+      "immigration": {
+        "role": "Immigration coordination",
+        "agent": "Advisor lane",
+        "bias": "Stress-tests eligibility framing without predicting outcomes."
+      },
+      "tax": {
+        "role": "Tax & payroll",
+        "agent": "Systems lane",
+        "bias": "Highlights reporting and withholding implications early."
+      },
+      "bank": {
+        "role": "Banking & credit",
+        "agent": "Systems lane",
+        "bias": "Flags ID, credit-history, and cash-flow friction points."
+      },
+      "health": {
+        "role": "Healthcare coverage",
+        "agent": "Systems lane",
+        "bias": "Maps enrollment windows and continuity risks."
+      },
+      "housing": {
+        "role": "Housing & lease",
+        "agent": "Systems lane",
+        "bias": "Surfaces deposits, guarantors, and documentation asks."
+      },
+      "workAuth": {
+        "role": "Work authorization",
+        "agent": "Timing lane",
+        "bias": "Connects employment offers to permit timelines."
+      },
+      "founder": {
+        "role": "Founder readiness",
+        "agent": "Advisor lane",
+        "bias": "Balances runway, immigration milestones, and operational load."
+      },
+      "default": {
+        "role": "Department",
+        "agent": "Stakeholder",
+        "bias": "One function in the cascade."
+      },
+      "Sales": {
+        "role": "VP of Sales",
+        "agent": "Sales",
+        "bias": "Protects pipeline coverage and quarter close."
+      },
+      "Finance": {
+        "role": "CFO",
+        "agent": "Finance",
+        "bias": "Protects runway and pushes cost cuts."
+      },
+      "Operations": {
+        "role": "Operations Lead",
+        "agent": "Operations",
+        "bias": "Protects delivery capacity."
+      },
+      "HR": {
+        "role": "HR Director",
+        "agent": "HR",
+        "bias": "Protects retention under quota pressure."
+      }
+    }
+  },
+  "plan": {
+    "mcpServers": "MCP Servers:",
+    "status": {
+      "completed": "completed",
+      "in-progress": "in-progress",
+      "pending": "pending",
+      "need-help": "need-help",
+      "failed": "failed"
+    }
+  }
+}

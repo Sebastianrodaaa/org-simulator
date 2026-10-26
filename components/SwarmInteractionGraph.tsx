@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import * as d3 from 'd3'
 import type { SimulationEvent } from '@/lib/types'
 
@@ -79,6 +80,7 @@ function stableOffset(seed: string, axis: 'x' | 'y'): number {
 }
 
 export function SwarmInteractionGraph({ events }: Props) {
+  const t = useTranslations('graph')
   const svgRef = useRef<SVGSVGElement>(null)
 
   const { nodes, links } = useMemo(() => {
@@ -240,7 +242,7 @@ export function SwarmInteractionGraph({ events }: Props) {
   if (nodes.length === 0) {
     return (
       <div className="h-full flex items-center justify-center text-xs text-gray-400">
-        Waiting for swarm agents...
+        {t('swarmEmpty')}
       </div>
     )
   }
@@ -250,7 +252,7 @@ export function SwarmInteractionGraph({ events }: Props) {
       ref={svgRef}
       viewBox={`0 0 ${W} ${H}`}
       className="w-full h-full"
-      aria-label="Swarm interaction graph"
+      aria-label={t('swarmAria')}
     />
   )
 }

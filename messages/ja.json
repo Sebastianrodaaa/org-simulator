@@ -1,0 +1,264 @@
+{
+  "nav": {
+    "brand": "CivicBridge",
+    "rehearse": "リハーサル",
+    "overview": "概要",
+    "language": "言語"
+  },
+  "metadata": {
+    "title": "CivicBridge — 移民向けリハーサルツール",
+    "description": "シミュレーション上の顧問、リスクの示唆、次のステップで、移民と最初の約1000日の意思決定を練習します。"
+  },
+  "common": {
+    "loading": "読み込み中…",
+    "close": "閉じる"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "it": "Italiano",
+    "zh": "中文",
+    "ja": "日本語",
+    "ru": "Русский"
+  },
+  "simulate": {
+    "scenarioSituationLabel": "状況：",
+    "scenarioKeyFactsLabel": "重要事実：",
+    "scenarioUncertaintyLabel": "不確実性と確認フラグ：",
+    "scenarioNoneSelected": "- 選択なし",
+    "scenarioNotProvided": "- 未入力",
+    "demoMode": "デモモード",
+    "demoHint": "サンプルの状況とフィールドが事前入力されています。「実行」を押して開始してください。",
+    "situationTitle": "状況",
+    "situationPlaceholder": "目標、現在の状況、期限、場所、不確実に感じる点を記載してください。",
+    "uncertaintySection": "不確実性とプライバシー",
+    "safetyHeading": "安全上の注意",
+    "engineTitle": "シミュレーションエンジン",
+    "engineCascade": "カスケード",
+    "engineSwarm": "スウォーム",
+    "poolSize": "プールサイズ",
+    "activePerRound": "ラウンドあたりのアクティブ数",
+    "runStarting": "開始中…",
+    "runRunning": "リハーサル実行中",
+    "runCta": "リハーサルを実行",
+    "errorStart": "シミュレーションを開始できませんでした",
+    "activityComplete": "アクティビティログ",
+    "activityError": "接続エラー",
+    "activityLive": "ライブアクティビティ",
+    "detectedRisks": "検出されたリスク",
+    "viewReport": "アクションレポートを見る →",
+    "riskMapPreview": "リスクマップのプレビュー",
+    "riskMapPreviewHint": "リハーサルを実行すると、顧問の視点・リスク・次のステップがここに表示されます。",
+    "advisorDeliberation": "顧問の審議",
+    "riskMap": "リスクマップ",
+    "live": "ライブ",
+    "complete": "完了",
+    "agentsSurfaced": "表示されたエージェント {count}",
+    "interactionsCount": "インタラクション {count}",
+    "risksCount": "リスク {count}",
+    "risksCountOne": "リスク {count}",
+    "runToSeeRisks": "リハーサルを実行してリスクを表示",
+    "advisorLegend": "顧問の凡例",
+    "swarmNodeHint": "ノードサイズ = メッセージ量",
+    "swarmArrowHint": "矢印 = 同じラウンドの次の発言者",
+    "severityLegend": "深刻度",
+    "dragHint": "ドラッグして再配置",
+    "sevLow": "低",
+    "sevMedium": "中",
+    "sevHigh": "高",
+    "conflictTypes": {
+      "resource": "リソース",
+      "priority": "優先度",
+      "timeline": "タイムライン",
+      "budget": "予算"
+    },
+    "perspectiveLabel": "顧問の視点",
+    "safetyNote": "CivicBridge は計画支援であり、法的助言ではありません。リスク・質問・次のステップを整理し、公的情報や資格のある専門家による確認を助けます。書類や機密情報はこのデモに入力しないでください。",
+    "prefill": {
+      "situation": "米国に残りながら会社を立ち上げたい移民創業者です。O-1、EB-1A、国際起業家規則を比較し、会社設立の要件を把握し、資金とスケジュールの想定外を避けたいです。",
+      "keyFacts": {
+        "currentStatus": "米国で一時的な在留資格",
+        "goal": "より強い長期ルートを準備しつつ事業を続ける",
+        "deadline": "次の資金調達とステータスの節目までに信頼できる計画が必要",
+        "location": "アメリカ合衆国",
+        "workCompanyFacts": "初期段階の会社、米国顧客、証拠材料はまだ散在",
+        "familyDependents": "行動前に扶養家族への影響を把握したい"
+      },
+      "uncertaintyIds": ["professional_review", "deadline_uncertain", "worried_sharing"]
+    },
+    "keyFacts": {
+      "currentStatus": { "label": "現在の状況", "placeholder": "現在のビザ、入国、手続きの段階" },
+      "goal": { "label": "目標", "placeholder": "実現したいこと" },
+      "deadline": { "label": "期限", "placeholder": "重要な日付や時間的圧力" },
+      "location": { "label": "所在地", "placeholder": "都市、州、国の文脈" },
+      "workCompanyFacts": { "label": "勤務・会社の事実", "placeholder": "雇用主、会社、収入、証拠メモ" },
+      "familyDependents": { "label": "家族・扶養家族", "placeholder": "影響を受けるその他の人" }
+    },
+    "uncertaintyChip": {
+      "unsure_status": "自分の在留状況が分からない",
+      "deadline_uncertain": "期限が不確定",
+      "professional_review": "専門家の確認が必要",
+      "money_tight": "資金が厳しい",
+      "unknown_agency": "どの当局が管轄か分からない",
+      "worried_sharing": "詳細を共有することに不安がある"
+    },
+    "uncertaintyIds": ["unsure_status", "deadline_uncertain", "professional_review", "money_tight", "unknown_agency", "worried_sharing"],
+    "previewAdvisors": ["移民弁護士", "エビデンスコーチ", "創業者メンター", "税務・会社ナビゲーター", "バンキング", "ヘルスケア"]
+  },
+  "dashboard": {
+    "planningTitle": "計画ドメイン",
+    "planningIntro": "CivicBridge が練習する領域の参考スナップショット — 移民、エビデンス、会社設立、日常の仕組み。診断ではありません。状況に合わせてリハーサルを実行してください。",
+    "sampleFeed": "サンプル顧問フィード →",
+    "hubsTitle": "主要都市とハブ",
+    "hubsIntro": "創業者がよく同様のリハーサルを行う地域 — CivicBridge の「オフィス」ではなく、ルートとリソースの地理的集中です。",
+    "hubsCount": "ハイライト {active} / {total} ハブ",
+    "highlighted": "ハイライト",
+    "quiet": "静か",
+    "rehearsalsTitle": "リハーサル",
+    "rehearsalsHint": "実行を開始すると、顧問の審議とリスクをリアルタイムで確認できます。",
+    "noRehearsal": "このデバイスにアクティブなリハーサルはありません。「リハーサル」を開いて開始してください。",
+    "startRehearsal": "リハーサルを開始",
+    "badge": { "onTrack": "順調", "needsAttention": "要注目", "highTension": "高張力" },
+    "domains": {
+      "immigration": {
+        "title": "移民・在留",
+        "metrics": [
+          { "label": "経路の明確さ", "value": "強い" },
+          { "label": "主要期限", "value": "次の資金調達" },
+          { "label": "扶養家族", "value": "要確認" }
+        ]
+      },
+      "evidence": {
+        "title": "エビデンスと信頼性",
+        "metrics": [
+          { "label": "ポートフォリオの深さ", "value": "成長中" },
+          { "label": "独立した証明", "value": "ばらつき" },
+          { "label": "物語の整合", "value": "良好" }
+        ]
+      },
+      "company": {
+        "title": "会社とランウェイ",
+        "metrics": [
+          { "label": "法人とIP", "value": "進行中" },
+          { "label": "ランウェイと申請", "value": "そろえが必要" },
+          { "label": "採用リスク", "value": "低" }
+        ]
+      },
+      "daily": {
+        "title": "税務、銀行、日常生活",
+        "metrics": [
+          { "label": "銀行・ID", "value": "順序化済み" },
+          { "label": "税のストーリー", "value": "モデル" },
+          { "label": "健康・住居", "value": "安定" }
+        ]
+      }
+    },
+    "hubs": [
+      { "id": "sf", "city": "サンフランシスコ", "focus": "創業者ビザ · VC 密度" },
+      { "id": "nyc", "city": "ニューヨーク", "focus": "法律相談 · 金融" },
+      { "id": "austin", "city": "オースティン", "focus": "スタートアップ採用 · 給与" },
+      { "id": "toronto", "city": "トロント", "focus": "北米モビリティ · リモートチーム" },
+      { "id": "london", "city": "ロンドン", "focus": "EMEA 展開" },
+      { "id": "berlin", "city": "ベルリン", "focus": "EU 許可 · 業務委託" }
+    ]
+  },
+  "report": {
+    "generating": "レポートを生成中…",
+    "loadError": "レポートの読み込みに失敗しました",
+    "runMeta": "実行 {id} · {date}",
+    "executiveSummary": "エグゼクティブサマリー",
+    "execDisclaimer": "顧問の調整概要 — リハーサルのみで、法的助言ではありません。",
+    "confidenceScore": "信頼度スコア",
+    "keyRisks": "主要リスク",
+    "recommendedActions": "推奨アクション",
+    "groundedFacts": "根拠のある事実",
+    "openUncertainties": "未解消の不確実性",
+    "mustVerify": "行動前に確認",
+    "questionsPro": "専門家への質問",
+    "sources": "情報源",
+    "riskTimeline": "リスクのタイムライン",
+    "riskTimelineHint": "リハーサル中に検出された顧問レーン間の緊張。",
+    "round": "Rnd {n}",
+    "advisorTranscript": "顧問トランスクリプト（{count} 件）",
+    "roundHeading": "ラウンド {n}"
+  },
+  "drawer": {
+    "sampleRehearsalFeed": "サンプルリハーサルフィード",
+    "liveSample": "ライブ — {title} のサンプル顧問メッセージ",
+    "sampleComplete": "サンプル完了 — {count} 件のメッセージ（図示のみ）",
+    "connecting": "接続中…",
+    "waitingSample": "サンプルメッセージを待機中…",
+    "notLegalAdvice": "法的助言ではありません — 全体実行は「リハーサル」を使用してください。",
+    "messageCount": "{count} 件のメッセージ",
+    "goRehearsal": "リハーサルへ →"
+  },
+  "graph": {
+    "empty": "メッセージが届くと顧問レーンがここに表示されます。",
+    "ariaNetwork": "顧問リスクリハーサルネットワーク",
+    "swarmEmpty": "スウォームエージェントを待機中…",
+    "close": "閉じる",
+    "risksHeading": "リスク（{count}）",
+    "lastMessage": "最後のメッセージ",
+    "noActivity": "このレーンにはまだアクティビティがありません。",
+    "vs": "対",
+    "swarmAria": "スウォーム相互作用グラフ",
+    "meta": {
+      "evidence": {
+        "role": "証拠・文書",
+        "agent": "顧問レーン",
+        "bias": "証明・スケジュール・専門家確認のトリガーの不足を浮かび上がらせます。"
+      },
+      "immigration": {
+        "role": "移民調整",
+        "agent": "顧問レーン",
+        "bias": "結果を予測せず適格性の枠組みを試します。"
+      },
+      "tax": {
+        "role": "税・給与",
+        "agent": "システムレーン",
+        "bias": "申告と源泉の影響を早めに浮き彫りにします。"
+      },
+      "bank": {
+        "role": "銀行・信用",
+        "agent": "システムレーン",
+        "bias": "身分証、与信履歴、キャッシュフローの摩擦点を示します。"
+      },
+      "health": {
+        "role": "医療保険",
+        "agent": "システムレーン",
+        "bias": "加入ウィンドウと継続リスクをマッピングします。"
+      },
+      "housing": {
+        "role": "住居・リース",
+        "agent": "システムレーン",
+        "bias": "敷金、保証人、書類要求を表面化します。"
+      },
+      "workAuth": {
+        "role": "就労許可",
+        "agent": "タイミングレーン",
+        "bias": "採用オファーと許可のタイムラインを接続します。"
+      },
+      "founder": {
+        "role": "創業者の準備",
+        "agent": "顧問レーン",
+        "bias": "ランウェイ、移民の節目、運用負荷のバランスを取ります。"
+      },
+      "default": {
+        "role": "顧問の視点",
+        "agent": "計画レーン",
+        "bias": "リハーサルの一面を表す — 個別の法的助言ではありません。"
+      }
+    }
+  },
+  "plan": {
+    "mcpServers": "MCP サーバー：",
+    "status": {
+      "completed": "完了",
+      "in-progress": "進行中",
+      "pending": "保留",
+      "need-help": "ヘルプが必要",
+      "failed": "失敗"
+    }
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "nav": {
+    "brand": "CivicBridge",
+    "rehearse": "演练",
+    "overview": "总览",
+    "language": "语言"
+  },
+  "metadata": {
+    "title": "CivicBridge — 移民决策演练工具",
+    "description": "通过模拟顾问、风险提示与后续步骤，演练移民与抵达后最初约一千天内的决策。"
+  },
+  "common": {
+    "loading": "加载中…",
+    "close": "关闭"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "it": "Italiano",
+    "zh": "中文",
+    "ja": "日本語",
+    "ru": "Русский"
+  },
+  "simulate": {
+    "scenarioSituationLabel": "情况：",
+    "scenarioKeyFactsLabel": "关键事实：",
+    "scenarioUncertaintyLabel": "不确定性与复核标记：",
+    "scenarioNoneSelected": "- 未选择",
+    "scenarioNotProvided": "- 尚未填写",
+    "demoMode": "演示模式",
+    "demoHint": "示例情境与字段已预填。点击运行即可开始。",
+    "situationTitle": "情况",
+    "situationPlaceholder": "请描述你的目标、当前状态、截止期限、地点以及仍感到不确定的事项。",
+    "uncertaintySection": "不确定性与隐私",
+    "safetyHeading": "安全提示",
+    "engineTitle": "模拟引擎",
+    "engineCascade": "级联",
+    "engineSwarm": "集群",
+    "poolSize": "池规模",
+    "activePerRound": "每轮活跃数",
+    "runStarting": "正在启动",
+    "runRunning": "演练进行中",
+    "runCta": "运行演练",
+    "errorStart": "无法启动模拟",
+    "activityComplete": "活动轨迹",
+    "activityError": "连接错误",
+    "activityLive": "实时活动",
+    "detectedRisks": "已识别风险",
+    "viewReport": "查看行动报告 →",
+    "riskMapPreview": "风险地图预览",
+    "riskMapPreviewHint": "运行演练后，可在此查看顾问观点、风险与后续步骤。",
+    "advisorDeliberation": "顾问讨论",
+    "riskMap": "风险地图",
+    "live": "实时",
+    "complete": "已完成",
+    "agentsSurfaced": "已出现的顾问：{count}",
+    "interactionsCount": "互动：{count}",
+    "risksCount": "风险：{count}",
+    "risksCountOne": "风险：{count}",
+    "runToSeeRisks": "运行演练以查看风险",
+    "advisorLegend": "顾问图例",
+    "swarmNodeHint": "节点大小 = 消息量",
+    "swarmArrowHint": "箭头 = 同一轮次中的下一位发言者",
+    "severityLegend": "严重程度",
+    "dragHint": "拖动以调整位置",
+    "sevLow": "低",
+    "sevMedium": "中",
+    "sevHigh": "高",
+    "conflictTypes": {
+      "resource": "资源",
+      "priority": "优先级",
+      "timeline": "时间线",
+      "budget": "预算"
+    },
+    "perspectiveLabel": "顾问视角",
+    "safetyNote": "CivicBridge 是规划辅助工具，不提供法律意见。它帮助整理风险、问题与后续步骤，便于你向官方渠道或持证专业人士核实细节。请勿在此演示中输入证件或敏感信息。",
+    "prefill": {
+      "situation": "我是一名移民创业者，希望在美国创业的同时维持合法居留。我想比较 O-1、EB-1A 与国际企业家规则，了解公司设立需求，并尽量避免资金与时间节奏上的意外。",
+      "keyFacts": {
+        "currentStatus": "在美国持临时身份",
+        "goal": "继续发展公司，同时准备更稳健的长期路径",
+        "deadline": "需要在下一轮融资与身份节点前拿出可信方案",
+        "location": "美国",
+        "workCompanyFacts": "早期公司、美国客户、佐证材料仍较分散",
+        "familyDependents": "需要先了解对家属的影响再采取行动"
+      },
+      "uncertaintyIds": ["professional_review", "deadline_uncertain", "worried_sharing"]
+    },
+    "keyFacts": {
+      "currentStatus": { "label": "当前身份", "placeholder": "当前签证、入境或办理进度" },
+      "goal": { "label": "目标", "placeholder": "你努力想实现的事项" },
+      "deadline": { "label": "截止期限", "placeholder": "关键日期或时间压力" },
+      "location": { "label": "地点", "placeholder": "城市、州或国家背景" },
+      "workCompanyFacts": { "label": "工作或公司情况", "placeholder": "雇主、公司、收入或佐证笔记" },
+      "familyDependents": { "label": "家庭或家属", "placeholder": "还有哪些人受影响" }
+    },
+    "uncertaintyChip": {
+      "unsure_status": "我不确定自己的身份状态",
+      "deadline_uncertain": "截止期限不确定",
+      "professional_review": "我需要专业人士复核",
+      "money_tight": "资金紧张",
+      "unknown_agency": "我不确定对应哪个机构",
+      "worried_sharing": "我担心分享细节"
+    },
+    "uncertaintyIds": ["unsure_status", "deadline_uncertain", "professional_review", "money_tight", "unknown_agency", "worried_sharing"],
+    "previewAdvisors": ["移民律师", "佐证教练", "创始人导师", "税务/公司向导", "银行", "医疗"]
+  },
+  "dashboard": {
+    "planningTitle": "规划领域",
+    "planningIntro": "CivicBridge 演练领域的示意快照——移民、佐证、公司设立与日常体系。并非诊断；请为你的情况运行演练。",
+    "sampleFeed": "示例顾问动态 →",
+    "hubsTitle": "同类城市与节点",
+    "hubsIntro": "创始人常进行类似演练的地区——并非 CivicBridge「办公室」，而是路径与资源的地理集中。",
+    "hubsCount": "已突出 {active} / {total} 个节点",
+    "highlighted": "突出",
+    "quiet": "较少",
+    "rehearsalsTitle": "演练",
+    "rehearsalsHint": "开始一次运行，实时查看顾问讨论与风险。",
+    "noRehearsal": "此设备上没有进行中的演练。打开「演练」以开始。",
+    "startRehearsal": "开始演练",
+    "badge": { "onTrack": "进展正常", "needsAttention": "需要关注", "highTension": "张力较高" },
+    "domains": {
+      "immigration": {
+        "title": "移民与身份",
+        "metrics": [
+          { "label": "路径清晰度", "value": "较强" },
+          { "label": "关键截止", "value": "下一轮融资" },
+          { "label": "家属", "value": "待复核" }
+        ]
+      },
+      "evidence": {
+        "title": "佐证与可信度",
+        "metrics": [
+          { "label": "材料深度", "value": "增长中" },
+          { "label": "独立证明", "value": "不均" },
+          { "label": "叙事贴合", "value": "良好" }
+        ]
+      },
+      "company": {
+        "title": "公司与资金跑道",
+        "metrics": [
+          { "label": "主体与知识产权", "value": "进行中" },
+          { "label": "跑道与申报", "value": "尽快对齐" },
+          { "label": "招聘风险", "value": "低" }
+        ]
+      },
+      "daily": {
+        "title": "税务、银行与日常生活",
+        "metrics": [
+          { "label": "银行/证件", "value": "已排序" },
+          { "label": "税务叙事", "value": "模型" },
+          { "label": "医疗与住房", "value": "稳定" }
+        ]
+      }
+    },
+    "hubs": [
+      { "id": "sf", "city": "旧金山", "focus": "创始人签证 · VC 密度" },
+      { "id": "nyc", "city": "纽约", "focus": "法律诊所 · 金融" },
+      { "id": "austin", "city": "奥斯汀", "focus": "初创招聘 · 薪酬" },
+      { "id": "toronto", "city": "多伦多", "focus": "北美流动 · 远程团队" },
+      { "id": "london", "city": "伦敦", "focus": "EMEA 扩张" },
+      { "id": "berlin", "city": "柏林", "focus": "欧盟许可 · 外包" }
+    ]
+  },
+  "report": {
+    "generating": "正在生成报告…",
+    "loadError": "无法加载报告",
+    "runMeta": "运行 {id} · {date}",
+    "executiveSummary": "执行摘要",
+    "execDisclaimer": "顾问协调概览——仅供演练，不构成法律意见。",
+    "confidenceScore": "置信度",
+    "keyRisks": "主要风险",
+    "recommendedActions": "建议行动",
+    "groundedFacts": "有据事实",
+    "openUncertainties": "待解不确定项",
+    "mustVerify": "行动前需核实",
+    "questionsPro": "需要向专业人士咨询的问题",
+    "sources": "来源",
+    "riskTimeline": "风险时间线",
+    "riskTimelineHint": "演练中检测到的顾问条线之间的张力。",
+    "round": "第 {n} 轮",
+    "advisorTranscript": "顾问纪要（{count} 条消息）",
+    "roundHeading": "第 {n} 轮"
+  },
+  "drawer": {
+    "sampleRehearsalFeed": "示例演练流",
+    "liveSample": "实时 — {title} 的示例顾问消息",
+    "sampleComplete": "示例结束 — {count} 条消息（仅供演示）",
+    "connecting": "连接中…",
+    "waitingSample": "等待示例消息…",
+    "notLegalAdvice": "不构成法律意见 — 请使用「演练」完整运行。",
+    "messageCount": "{count} 条消息",
+    "goRehearsal": "前往演练 →"
+  },
+  "graph": {
+    "empty": "收到消息后，顾问条带将显示在此处。",
+    "ariaNetwork": "顾问风险演练网络",
+    "swarmEmpty": "正在等待集群智能体…",
+    "close": "关闭",
+    "risksHeading": "风险（{count}）",
+    "lastMessage": "最后一条消息",
+    "noActivity": "此条线尚无活动。",
+    "vs": "对",
+    "swarmAria": "集群互动图",
+    "meta": {
+      "evidence": {
+        "role": "佐证与文件",
+        "agent": "顾问条线",
+        "bias": "揭示证明、时间表与专业复核触发点方面的缺口。"
+      },
+      "immigration": {
+        "role": "移民协调",
+        "agent": "顾问条线",
+        "bias": "检验资格叙事框架，不预测结果。"
+      },
+      "tax": {
+        "role": "税务与薪酬",
+        "agent": "体系条线",
+        "bias": "尽早突出申报与预扣影响。"
+      },
+      "bank": {
+        "role": "银行与信贷",
+        "agent": "体系条线",
+        "bias": "标记身份、信用记录与现金流摩擦点。"
+      },
+      "health": {
+        "role": "医疗保障",
+        "agent": "体系条线",
+        "bias": "梳理加入窗口与连续性风险。"
+      },
+      "housing": {
+        "role": "住房与租约",
+        "agent": "体系条线",
+        "bias": "呈现押金、担保人与文件要求。"
+      },
+      "workAuth": {
+        "role": "工作许可",
+        "agent": "节奏条线",
+        "bias": "连接录用与许可时间线。"
+      },
+      "founder": {
+        "role": "创始人准备度",
+        "agent": "顾问条线",
+        "bias": "平衡资金跑道、移民节点与运营负荷。"
+      },
+      "default": {
+        "role": "顾问视角",
+        "agent": "规划条线",
+        "bias": "代表演练的一个侧面——非个性化法律意见。"
+      }
+    }
+  },
+  "plan": {
+    "mcpServers": "MCP 服务器：",
+    "status": {
+      "completed": "已完成",
+      "in-progress": "进行中",
+      "pending": "待处理",
+      "need-help": "需要帮助",
+      "failed": "失败"
+    }
+  }
+}

@@ -11,16 +11,6 @@ export interface KeyFacts {
   familyDependents: string
 }
 
-export interface GuidedScenario {
-  id: string
-  track: CivicBridgeTrack
-  title: string
-  description: string
-  situation: string
-  keyFacts: KeyFacts
-  uncertaintyChips: string[]
-}
-
 export type DeptName = 'Sales' | 'Finance' | 'Operations' | 'HR'
 
 export interface SimulationRun {
@@ -45,6 +35,20 @@ export interface MessageDict {
   timestamp: string
 }
 
+export type RiskCategory =
+  | 'eligibility'
+  | 'evidence'
+  | 'timing'
+  | 'cost'
+  | 'compliance'
+  | 'work_authorization'
+  | 'healthcare'
+  | 'housing'
+  | 'banking_credit'
+  | 'tax'
+  | 'language_access'
+  | 'professional_review'
+
 export interface ConflictDict {
   conflict_id: string
   dept_a: string
@@ -55,6 +59,14 @@ export interface ConflictDict {
   round_detected: number
   agent_a_message: string
   agent_b_message: string
+  /** CivicBridge: coarse risk lane mapped from advisor tension text */
+  risk_category?: RiskCategory | string
+  risk_summary?: string
+}
+
+export interface ReportSourceLink {
+  title: string
+  url: string
 }
 
 export interface ReportDict {
@@ -62,6 +74,12 @@ export interface ReportDict {
   key_risks: string[]
   recommended_actions: string[]
   confidence_score: number
+  known_facts?: string[]
+  unknown_facts?: string[]
+  must_verify_facts?: string[]
+  professional_questions?: string[]
+  source_links?: ReportSourceLink[]
+  caveat?: string
 }
 
 /** Wire event from `/ws/simulation/{run_id}` — may be flat (mock) or nested `data` (NATS). */
