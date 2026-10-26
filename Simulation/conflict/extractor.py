@@ -158,7 +158,7 @@ def _risk_category_from_text(description: str, ctype: str) -> str:
         ("bank", "banking_credit"),
         ("credit", "banking_credit"),
         ("health", "healthcare"),
-        ("coverage", "healthcare"),
+        ("health coverage", "healthcare"),
         ("housing", "housing"),
         ("lease", "housing"),
         ("deposit", "housing"),
