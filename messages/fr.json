@@ -1,0 +1,264 @@
+{
+  "nav": {
+    "brand": "CivicBridge",
+    "rehearse": "Répéter",
+    "overview": "Vue d'ensemble",
+    "language": "Langue"
+  },
+  "metadata": {
+    "title": "CivicBridge — Outil de répétition pour l'immigration",
+    "description": "Répondez à des décisions d'immigration et aux 1000 premiers jours avec des conseillers simulés, des alertes de risques et les prochaines étapes."
+  },
+  "common": {
+    "loading": "Chargement…",
+    "close": "Fermer"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "it": "Italiano",
+    "zh": "中文",
+    "ja": "日本語",
+    "ru": "Русский"
+  },
+  "simulate": {
+    "scenarioSituationLabel": "Situation :",
+    "scenarioKeyFactsLabel": "Faits clés :",
+    "scenarioUncertaintyLabel": "Incertitude et indicateurs de relecture :",
+    "scenarioNoneSelected": "- Aucune sélection",
+    "scenarioNotProvided": "- Pas encore fourni",
+    "demoMode": "Mode démo",
+    "demoHint": "La situation et les champs d'exemple sont préremplis. Appuyez sur Lancer pour commencer.",
+    "situationTitle": "Situation",
+    "situationPlaceholder": "Décrivez votre objectif, votre situation actuelle, l'échéance, le lieu et ce qui vous semble incertain.",
+    "uncertaintySection": "Incertitude et confidentialité",
+    "safetyHeading": "Note de sécurité",
+    "engineTitle": "Moteur de simulation",
+    "engineCascade": "Cascade",
+    "engineSwarm": "Essaim",
+    "poolSize": "Taille du groupe",
+    "activePerRound": "Actifs / tour",
+    "runStarting": "Démarrage…",
+    "runRunning": "Simulation en cours",
+    "runCta": "Lancer la simulation",
+    "errorStart": "Impossible de démarrer la simulation",
+    "activityComplete": "Journal d'activité",
+    "activityError": "Erreur de connexion",
+    "activityLive": "Activité en direct",
+    "detectedRisks": "Risques détectés",
+    "viewReport": "Voir le rapport d'action →",
+    "riskMapPreview": "Aperçu de la carte des risques",
+    "riskMapPreviewHint": "Lancez une simulation pour voir ici les points de vue des conseillers, les risques et les prochaines étapes.",
+    "advisorDeliberation": "Délibération des conseillers",
+    "riskMap": "Carte des risques",
+    "live": "en direct",
+    "complete": "terminé",
+    "agentsSurfaced": "{count} conseillers affichés",
+    "interactionsCount": "{count} interactions",
+    "risksCount": "{count} risques",
+    "risksCountOne": "{count} risque",
+    "runToSeeRisks": "Lancez une simulation pour voir les risques",
+    "advisorLegend": "Légende des conseillers",
+    "swarmNodeHint": "Taille du nœud = volume des messages",
+    "swarmArrowHint": "Flèche = prochain orateur dans le même tour",
+    "severityLegend": "Gravité",
+    "dragHint": "glisser pour repositionner",
+    "sevLow": "faible",
+    "sevMedium": "moyenne",
+    "sevHigh": "élevée",
+    "conflictTypes": {
+      "resource": "ressources",
+      "priority": "priorité",
+      "timeline": "échéancier",
+      "budget": "budget"
+    },
+    "perspectiveLabel": "point de vue du conseiller",
+    "safetyNote": "CivicBridge est un outil d'aide à la planification, pas un conseil juridique. Il aide à organiser les risques, les questions et les prochaines étapes afin que vous puissiez vérifier les détails auprès de sources officielles ou d'un professionnel qualifié. Évitez de saisir des documents ou des informations sensibles dans cette démo.",
+    "prefill": {
+      "situation": "Je suis un·e fondateur·ice immigré·e et je souhaite rester aux États-Unis tout en créant une entreprise. Je veux comparer l'O-1, l'EB-1A et la règle sur l'entrepreneur international, comprendre les besoins de création d'entreprise et éviter les surprises de calendrier liées au financement.",
+      "keyFacts": {
+        "currentStatus": "Aux États-Unis avec un statut temporaire",
+        "goal": "Poursuivre le développement de l'entreprise tout en préparant une voie à long terme plus solide",
+        "deadline": "Besoin d'un plan crédible avant le prochain jalon de financement et de statut",
+        "location": "États-Unis",
+        "workCompanyFacts": "Entreprise en phase initiale, clients américains, preuves encore dispersées",
+        "familyDependents": "Besoin de comprendre l'impact sur les personnes à charge avant d'agir"
+      },
+      "uncertaintyIds": ["professional_review", "deadline_uncertain", "worried_sharing"]
+    },
+    "keyFacts": {
+      "currentStatus": { "label": "Statut actuel", "placeholder": "Visa actuel, arrivée ou statut administratif" },
+      "goal": { "label": "Objectif", "placeholder": "Ce que vous cherchez à rendre possible" },
+      "deadline": { "label": "Échéance", "placeholder": "Date clé ou contrainte de délai" },
+      "location": { "label": "Lieu", "placeholder": "Ville, état ou pays" },
+      "workCompanyFacts": { "label": "Travail ou entreprise", "placeholder": "Employeur, entreprise, revenus ou notes sur les preuves" },
+      "familyDependents": { "label": "Famille ou personnes à charge", "placeholder": "Qui d'autre est concerné" }
+    },
+    "uncertaintyChip": {
+      "unsure_status": "Je ne suis pas sûr·e de mon statut",
+      "deadline_uncertain": "L'échéance est incertaine",
+      "professional_review": "J'ai besoin d'un avis professionnel",
+      "money_tight": "Les moyens financiers sont limités",
+      "unknown_agency": "Je ne sais pas quelle administration est compétente",
+      "worried_sharing": "J'ai peur de partager des détails"
+    },
+    "uncertaintyIds": ["unsure_status", "deadline_uncertain", "professional_review", "money_tight", "unknown_agency", "worried_sharing"],
+    "previewAdvisors": ["Avocat·e en immigration", "Coach sur les preuves", "Mentor de fondateur", "Conseiller·ère fiscal·e et entreprise", "Banque", "Santé"]
+  },
+  "dashboard": {
+    "planningTitle": "Domaines de planification",
+    "planningIntro": "Aperçu illustratif des thèmes que CivicBridge répète — immigration, preuves, création d'entreprise et systèmes du quotidien. Ce n'est pas un diagnostic ; lancez une simulation pour votre situation.",
+    "sampleFeed": "Fil d'exemple des conseillers →",
+    "hubsTitle": "Villes et nœuds pairs",
+    "hubsIntro": "Où les fondateurs font souvent des répétitions similaires — pas des « bureaux » CivicBridge, plutôt une densité géographique de parcours et de ressources.",
+    "hubsCount": "{active} / {total} nœuds mis en avant",
+    "highlighted": "mis en avant",
+    "quiet": "calme",
+    "rehearsalsTitle": "Simulations",
+    "rehearsalsHint": "Démarrez une exécution pour voir en direct la délibération des conseillers et les risques.",
+    "noRehearsal": "Aucune simulation active sur cet appareil. Ouvrez Répéter pour en lancer une.",
+    "startRehearsal": "Démarrer la simulation",
+    "badge": { "onTrack": "Dans les temps", "needsAttention": "À surveiller", "highTension": "Tension élevée" },
+    "domains": {
+      "immigration": {
+        "title": "Immigration et statut",
+        "metrics": [
+          { "label": "Clarté du parcours", "value": "Solide" },
+          { "label": "Échéance clé", "value": "Prochain financement" },
+          { "label": "Personnes à charge", "value": "À revoir" }
+        ]
+      },
+      "evidence": {
+        "title": "Preuves et crédibilité",
+        "metrics": [
+          { "label": "Profondeur du portefeuille", "value": "En croissance" },
+          { "label": "Preuves indépendantes", "value": "Inégales" },
+          { "label": "Cohérence du récit", "value": "Bonne" }
+        ]
+      },
+      "company": {
+        "title": "Entreprise et runway",
+        "metrics": [
+          { "label": "Entité et PI", "value": "En cours" },
+          { "label": "Runway vs. dossiers", "value": "À aligner bientôt" },
+          { "label": "Risque de recrutement", "value": "Faible" }
+        ]
+      },
+      "daily": {
+        "title": "Impôts, banque et vie quotidienne",
+        "metrics": [
+          { "label": "Banque / pièce d'identité", "value": "Enchaîné" },
+          { "label": "Récit à l'impôt", "value": "Modèle" },
+          { "label": "Logement et santé", "value": "Stable" }
+        ]
+      }
+    },
+    "hubs": [
+      { "id": "sf", "city": "San Francisco", "focus": "Visas fondateurs · densité VC" },
+      { "id": "nyc", "city": "New York", "focus": "Cliniques juridiques · finance" },
+      { "id": "austin", "city": "Austin", "focus": "Recrutements startup · paie" },
+      { "id": "toronto", "city": "Toronto", "focus": "Mobilité NA · équipes à distance" },
+      { "id": "london", "city": "Londres", "focus": "Expansion EMEA" },
+      { "id": "berlin", "city": "Berlin", "focus": "Permis UE · prestataires" }
+    ]
+  },
+  "report": {
+    "generating": "Génération du rapport…",
+    "loadError": "Échec du chargement du rapport",
+    "runMeta": "Exécution {id} · {date}",
+    "executiveSummary": "Résumé exécutif",
+    "execDisclaimer": "Vue d'ensemble de la coordination des conseillers — simulation uniquement, pas de conseil juridique.",
+    "confidenceScore": "Score de confiance",
+    "keyRisks": "Risques clés",
+    "recommendedActions": "Actions recommandées",
+    "groundedFacts": "Faits établis",
+    "openUncertainties": "Incertitudes ouvertes",
+    "mustVerify": "À vérifier avant d'agir",
+    "questionsPro": "Questions pour un professionnel",
+    "sources": "Sources",
+    "riskTimeline": "Chronologie des risques",
+    "riskTimelineHint": "Tensions entre les axes conseillers détectées pendant la simulation.",
+    "round": "Rnd {n}",
+    "advisorTranscript": "Transcription des conseillers ({count} messages)",
+    "roundHeading": "Tour {n}"
+  },
+  "drawer": {
+    "sampleRehearsalFeed": "fil de simulation d'exemple",
+    "liveSample": "En direct — messages d'exemple pour {title}",
+    "sampleComplete": "Exemple terminé — {count} messages (illustration de simulation uniquement)",
+    "connecting": "Connexion…",
+    "waitingSample": "En attente des messages d'exemple…",
+    "notLegalAdvice": "Pas de conseil juridique — utilisez Répéter pour une exécution complète.",
+    "messageCount": "{count} messages",
+    "goRehearsal": "Aller à la simulation →"
+  },
+  "graph": {
+    "empty": "Les axes conseillers apparaîtront ici au fil des messages.",
+    "ariaNetwork": "Réseau de répétition des risques entre axes conseillers",
+    "swarmEmpty": "En attente des agents de l'essaim…",
+    "close": "Fermer",
+    "risksHeading": "Risques ({count})",
+    "lastMessage": "Dernier message",
+    "noActivity": "Pas encore d'activité sur cet axe.",
+    "vs": "contre",
+    "swarmAria": "Graphe d'interaction de l'essaim",
+    "meta": {
+      "evidence": {
+        "role": "Preuves et documentation",
+        "agent": "Axe conseiller",
+        "bias": "Fait apparaître les manques de preuves, d'échéanciers et les déclencheurs d'examen professionnel."
+      },
+      "immigration": {
+        "role": "Coordination de l'immigration",
+        "agent": "Axe conseiller",
+        "bias": "Met à l'épreuve le cadrage d'éligibilité sans prédire le résultat."
+      },
+      "tax": {
+        "role": "Impôts et paie",
+        "agent": "Axe systèmes",
+        "bias": "Souligne tôt les implications en matière d'obligations déclaratives et de retenues."
+      },
+      "bank": {
+        "role": "Banque et crédit",
+        "agent": "Axe systèmes",
+        "bias": "Signale les frictions liées à l'identité, à l'historique de crédit et aux flux de trésorerie."
+      },
+      "health": {
+        "role": "Couverture santé",
+        "agent": "Axe systèmes",
+        "bias": "Cartographie les fenêtres d'inscription et les risques de discontinuité."
+      },
+      "housing": {
+        "role": "Logement et bail",
+        "agent": "Axe systèmes",
+        "bias": "Met en avant les cautions, garants et demandes de documents."
+      },
+      "workAuth": {
+        "role": "Autorisation de travail",
+        "agent": "Axe calendrier",
+        "bias": "Relie les offres d'emploi aux délais de permis."
+      },
+      "founder": {
+        "role": "Préparation du fondateur",
+        "agent": "Axe conseiller",
+        "bias": "Arbitrage entre runway, jalons d'immigration et charge opérationnelle."
+      },
+      "default": {
+        "role": "Point de vue du conseiller",
+        "agent": "Axe planification",
+        "bias": "Représente un volet de votre simulation — pas un conseil juridique personnalisé."
+      }
+    }
+  },
+  "plan": {
+    "mcpServers": "Serveurs MCP :",
+    "status": {
+      "completed": "terminé",
+      "in-progress": "en cours",
+      "pending": "en attente",
+      "need-help": "besoin d'aide",
+      "failed": "échoué"
+    }
+  }
+}
