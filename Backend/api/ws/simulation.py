@@ -43,8 +43,8 @@ _MOCK_EVENTS = [
     ("agent_message", "VP Sales", "Then move the cut to brand spend and keep the late-stage programs. Otherwise Q4 misses."),
     ("agent_message", "Ops Lead", "Flag handoff dates before Finance locks the number. We are already at capacity."),
     ("agent_message", "HR Director", "Do not pair this with a backfill freeze on the same team carrying the pipeline."),
-    ("conflict", "VP Sales", "Conflict: marketing cut vs. Q4 pipeline coverage (strength 8/10)."),
-    ("conflict", "HR Director", "Conflict: cost cut vs. quota-team attrition (strength 7/10)."),
+    ("conflict", "VP Sales", "Conflict: Finance budget cut vs. Q4 pipeline coverage (8/10)."),
+    ("conflict", "HR Director", "Conflict: Finance runway pressure vs. AE-team attrition (7/10)."),
     ("agent_message", "CFO", "Compromise: cut 20% of brand, hold the programs tied to named late-stage deals."),
     ("agent_message", "VP Sales", "That keeps the three deals. I can live with the brand cut if coverage stays above 3x."),
     ("agent_message", "Ops Lead", "Accepted, if close dates are reforecast before the board pack."),
@@ -120,7 +120,7 @@ async def _mock_stream(websocket: WebSocket, run_id: str) -> None:
         "summary": {
             "total_messages": len(_MOCK_EVENTS),
             "conflicts_detected": 2,
-            "recommendation": "Rehearse evidence sprint + payroll timing with explicit dates; schedule professional review checkpoints.",
+            "recommendation": "Hold the cut on uncommitted brand spend. Re-forecast pipeline coverage and quota-team load before the number is locked.",
         },
     })
     try:

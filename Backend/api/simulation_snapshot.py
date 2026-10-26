@@ -29,8 +29,12 @@ _RISK_KEYWORDS: list[tuple[str, str]] = [
     ("bank", "banking_credit"),
     ("credit", "banking_credit"),
     ("account", "banking_credit"),
+    ("budget", "cost"),
+    ("pipeline", "cost"),
+    ("attrition", "compliance"),
+    ("capacity", "compliance"),
     ("health", "healthcare"),
-    ("coverage", "healthcare"),
+    ("health coverage", "healthcare"),
     ("housing", "housing"),
     ("lease", "housing"),
     ("deposit", "housing"),
@@ -97,6 +101,21 @@ def events_to_wire_messages(events: list[dict[str, Any]], run_id: str) -> list[d
     return out
 
 
+def _peer_department(text: str, dept_a: str) -> str:
+    """Pick the other department named by the conflict, not the speaker's own."""
+    lower = text.lower()
+    rules = (
+        (("finance", "budget", "runway", "cost"), "Finance"),
+        (("sales", "pipeline", "quota", "marketing"), "Sales"),
+        (("operations", "capacity", "engineering"), "Operations"),
+        (("hr", "morale", "headcount", "attrition"), "HR"),
+    )
+    for needles, lane in rules:
+        if lane != dept_a and any(needle in lower for needle in needles):
+            return lane
+    return "Cross-department"
+
+
 def events_to_wire_conflicts(events: list[dict[str, Any]], run_id: str) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     idx = 0
@@ -125,10 +144,10 @@ def events_to_wire_conflicts(events: list[dict[str, Any]], run_id: str) -> list[
         raw = {
             "conflict_id": f"{run_id}-risk-{idx}",
             "dept_a": dept_a,
-            "dept_b": dept_a,
+            "dept_b": _peer_department(text, dept_a),
             "conflict_type": ctype,
             "severity": severity,
-            "description": text,
+            "description": re.sub(r"^conflict:\s*", "", text, flags=re.IGNORECASE),
             "round_detected": int(ev.get("round") or 1),
             "agent_a_message": text,
             "agent_b_message": "",

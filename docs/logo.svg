@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none" role="img" aria-label="OrgSim">
+  <rect width="128" height="128" rx="28" fill="#111827"/>
+  <path d="M40 46h48M64 46v36M40 82h48" stroke="#374151" stroke-width="3" stroke-linecap="round"/>
+  <path d="M40 46L64 82M88 46L64 82" stroke="#374151" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="40" cy="46" r="9" fill="#185FA5"/>
+  <circle cx="88" cy="46" r="9" fill="#854F0B"/>
+  <circle cx="40" cy="82" r="9" fill="#0F6E56"/>
+  <circle cx="88" cy="82" r="9" fill="#534AB7"/>
+  <circle cx="64" cy="64" r="8" fill="#F9FAFB"/>
+</svg>

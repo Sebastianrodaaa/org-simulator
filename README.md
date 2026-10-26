@@ -1,16 +1,42 @@
-# OrgSim — Organizational Decision Rehearsal
+<p align="center">
+  <img src="docs/logo.svg" alt="OrgSim logo" width="88" />
+</p>
+
+<h1 align="center">OrgSim</h1>
+
+<p align="center">
+  <strong>Organizational decision rehearsal.</strong><br />
+  Forecast the conflict before the decision is made.
+</p>
+
+<p align="center">
+  <img alt="Python 3.11" src="https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white" />
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" />
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+  <img alt="IBM Agent Orchestration Hackathon winner" src="https://img.shields.io/badge/IBM_Agent_Orchestration-Hackathon_winner-0F62FE?style=flat-square" />
+</p>
+
+<p align="center">
+  <img alt="decision rehearsal" src="https://img.shields.io/badge/decision_rehearsal-111827?style=flat-square" />
+  <img alt="multi-agent" src="https://img.shields.io/badge/multi--agent-185FA5?style=flat-square" />
+  <img alt="conflict forecast" src="https://img.shields.io/badge/conflict_forecast-991B1B?style=flat-square" />
+  <img alt="C-suite" src="https://img.shields.io/badge/C--suite-854F0B?style=flat-square" />
+  <img alt="Sales" src="https://img.shields.io/badge/Sales-185FA5?style=flat-square" />
+  <img alt="Finance" src="https://img.shields.io/badge/Finance-854F0B?style=flat-square" />
+  <img alt="Operations" src="https://img.shields.io/badge/Operations-0F6E56?style=flat-square" />
+  <img alt="HR" src="https://img.shields.io/badge/HR-534AB7?style=flat-square" />
+</p>
 
 OrgSim won the IBM agent orchestration hackathon. It rehearses a C-suite decision before anyone makes it. A panel of department agents — CFO, VP of Sales, Operations Lead, HR Director — argues from its own numbers, and the system forecasts the conflicts that exist only in the interaction between those departments.
 
 The loop is a proposed decision plus a set of departments. Personas are loaded from YAML, each with a KPI, a risk tolerance, and actions it will and will not take. Cascade lets the full panel speak every round. Swarm keeps a larger pool and activates a subset per round. After the rounds, a conflict extractor pairs opposing positions from different departments and writes an executive report.
 
-The demo is already on the simulate screen:
+The demo is the Q4 marketing cut, with Sales, Finance, Operations, and HR in the room:
 
 > The CFO has decided to cut the Q4 marketing budget by 20%. Simulate the organizational cascade over the next 90 days.
 
-Departments selected: Sales, Finance, Operations, HR.
-
-![OrgSim simulate screen with the CFO budget-cut scenario](docs/orgsim-simulate.png)
+![OrgSim rehearses the CFO marketing cut: departments appear, Sales–Finance and HR–Finance conflicts light up, then the report](docs/orgsim-demo.gif)
 
 ## Table of Contents
 
@@ -149,7 +175,9 @@ org-simulator/
 │   ├── conflict/
 │   └── tests/
 ├── Frontend/                   # Next.js simulate, dashboard, report
-└── docs/orgsim-simulate.png
+└── docs/
+    ├── logo.svg
+    └── orgsim-demo.gif
 ```
 
 ## Requirements

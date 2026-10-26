@@ -31,6 +31,8 @@ def _append_stub_rehearsal_events(run_id: str) -> None:
         return
     ts = datetime.now(tz=timezone.utc).isoformat()
     hist = run_store.event_history.setdefault(run_id, [])
+    if any(ev.get("type") in {"agent_message", "conflict"} for ev in hist):
+        return
     agents = [
         {"name": "CFO", "role": "CFO", "dept": "Finance"},
         {"name": "VP Sales", "role": "VP of Sales", "dept": "Sales"},
@@ -65,7 +67,7 @@ def _append_stub_rehearsal_events(run_id: str) -> None:
             "round": 2,
             "agent": agents[1],
             "message": (
-                "Conflict: Q4 marketing cut vs. pipeline coverage (strength 8/10)."
+                "Conflict: Finance budget cut vs. pipeline coverage (8/10)."
             ),
         },
     ])
