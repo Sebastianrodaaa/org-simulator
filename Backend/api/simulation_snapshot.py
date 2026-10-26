@@ -9,12 +9,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-# USCIS / federal landing pages — informational only; user must verify currency.
-_DEFAULT_SOURCES: list[dict[str, str]] = [
-    {"title": "USCIS — Options to consider if you are in the United States unlawfully", "url": "https://www.uscis.gov/humanitarian/options-for-noncitizens-in-united-states"},
-    {"title": "IRS — Individual taxpayer identification number (ITIN)", "url": "https://www.irs.gov/individuals/international-taxpayers/taxpayer-identification-numbers-tin"},
-    {"title": "HealthCare.gov — How to apply", "url": "https://www.healthcare.gov/how-do-i-apply-for-marketplace-insurance/"},
-]
+_DEFAULT_SOURCES: list[dict[str, str]] = []
 
 _RISK_KEYWORDS: list[tuple[str, str]] = [
     ("visa", "eligibility"),
@@ -147,17 +142,17 @@ def build_civicbridge_report(
     messages: list[dict[str, Any]],
     conflicts: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Deterministic rehearsal report — not legal advice."""
+    """Deterministic decision report from the department rehearsal."""
     key_risks = [str(c.get("risk_summary") or c.get("description", "")) for c in conflicts[:12]]
     if not key_risks:
         key_risks = [
-            "No automated risk pairs were extracted — skim advisor messages for evidence gaps and timeline assumptions.",
+            "No cross-department conflict pairs were extracted. Read the stakeholder messages for budget, timeline, and capacity tension.",
         ]
 
     bullets_next = [
-        "List concrete facts you still need (dates, documents, third-party confirmations).",
-        "Book time with a qualified immigration attorney or tax professional for anything touching status or filings.",
-        "Verify agency guidance on official sites before relying on dates or fees.",
+        "Name the programs the cut actually hits, not just the budget line.",
+        "Re-forecast pipeline coverage and delivery dates before locking the number.",
+        "Check whether the same team is also under a hiring or backfill freeze.",
     ]
 
     unknown_facts = []
@@ -171,24 +166,24 @@ def build_civicbridge_report(
             elif cleaned:
                 known_facts.append(cleaned)
     if not unknown_facts:
-        unknown_facts = ["Items you marked as uncertain in the rehearsal form."]
+        unknown_facts = ["Facts the scenario left open between departments."]
     if not known_facts:
-        known_facts = ["Scenario text and selected track context you confirmed at run start."]
+        known_facts = ["The decision text submitted at the start of the run."]
 
     must_verify = [
-        "Any deadline that affects status, work authorization, taxes, or housing notices.",
-        "Employer or school letters referenced in the scenario but not yet collected.",
+        "Which campaigns or deals the cut actually removes.",
+        "Whether delivery dates and quota load were reforecast with the new number.",
     ]
 
     questions = [
-        "What documents would a reviewer ask for first, and do you have authenticated copies?",
-        "Which parts of this plan depend on facts you have not independently verified?",
-        "What would trigger escalating to professional review this week vs next month?",
+        "Which late-stage deals depend on the spend being cut?",
+        "Does Operations have capacity if those deals still close?",
+        "Is the same team also under a hiring freeze?",
     ]
 
     exec_summary = (
-        "This rehearsal summarizes tensions surfaced between advisors during simulation. "
-        "It organizes prompts for verification — not conclusions about eligibility or outcomes."
+        "This rehearsal summarizes where departments disagree about the decision. "
+        "It is a conflict forecast for the leadership team, not the decision itself."
     )
 
     return {
@@ -202,8 +197,7 @@ def build_civicbridge_report(
         "professional_questions": questions,
         "source_links": _DEFAULT_SOURCES,
         "caveat": (
-            "CivicBridge does not provide legal advice. Verify every material fact with primary sources "
-            "or a licensed professional before acting."
+            "OrgSim forecasts conflict from the rehearsal. It does not approve the decision."
         ),
     }
 

@@ -25,16 +25,3 @@ simulation:
     Engineering: ops_lead
     HR: hr_director
     Marketing: vp_sales
-  # CivicBridge: map UI track → advisor template stems (YAML in Simulation/templates/)
-  advisor_tracks:
-    founder:
-      - immigration_attorney
-      - evidence_coach
-      - founder_mentor
-      - tax_company_navigator
-    first1000:
-      - banking_navigator
-      - healthcare_navigator
-      - housing_navigator
-      - tax_navigator
-      - local_systems_mentor
