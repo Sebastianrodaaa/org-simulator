@@ -294,8 +294,8 @@
     "goRehearsal": "Go to rehearsal →"
   },
   "graph": {
-    "empty": "Advisor lanes appear here as messages stream in.",
-    "ariaNetwork": "Advisor risk rehearsal network",
+    "empty": "Departments appear here as the panel speaks.",
+    "ariaNetwork": "Department conflict network",
     "swarmEmpty": "Waiting for swarm agents…",
     "close": "Close",
     "risksHeading": "Risks ({count})",

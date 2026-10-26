@@ -220,7 +220,13 @@ function SimulateInner() {
               disabled={loading || !!runId || selectedDepts.length === 0 || !decision.trim()}
               className="w-full px-4 py-2 rounded-md bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Starting...' : runId ? 'Simulation running' : 'Run simulation'}
+              {loading
+                ? 'Starting...'
+                : runId && status !== 'complete'
+                  ? 'Simulation running'
+                  : runId
+                    ? 'Simulation complete'
+                    : 'Run simulation'}
             </button>
           </section>
 
